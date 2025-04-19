@@ -11,7 +11,7 @@ export default function Home() {
   const [allData, setAllData] = useState<{[key : string] : string}[]>([]);   //object where key and values are string👍
   const [showModal, setShowModal] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  type formDataType = {[key : string] : string};
+  type formDataType = {[key : string] : string};        // type specification
 
 
 
@@ -27,6 +27,9 @@ export default function Home() {
   }, []);
 
 
+  // console.log("alldata are :",allData);     //============================================
+ 
+
 
   const handleChange = (e : React.ChangeEvent<HTMLInputElement>) => {
         setFormData({...formData, [e.target.name] : e.target.value});
@@ -40,7 +43,7 @@ export default function Home() {
 
 
   const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault();         // this will prevent the default data submission in browser 📌
 
     if(editIndex !==  null){
 
@@ -49,11 +52,15 @@ export default function Home() {
       updateData[editIndex] = formData;
       setAllData(updateData);
       localStorage.setItem("userData", JSON.stringify(updateData));
+
+      // console.log("edit index is : ",editIndex);      // ===================================
+
       setEditIndex(null);    //reset edit mode
     }
     else{
       
-      const newEntry = {id : generateId(), ...formData};      // auto generated ID
+      // if not editing then show data with new id : 👍
+      const newEntry = {id : generateId(), ...formData};      // set auto generated ID
       const updateData : any = [...allData, newEntry];
       setAllData(updateData);
       localStorage.setItem("userData", JSON.stringify(updateData));
