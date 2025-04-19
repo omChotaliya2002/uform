@@ -144,7 +144,7 @@ export default function Home() {
 
                     <div className="flex flex-row">
                       <h1 className="w-[75px]" style={{border:"0px solid black"}}> <b> {field} : </b> </h1>
-                    <input className="rounded-md" key={field} onChange={handleChange} type="text" name={field} placeholder={`Enter your ${field}`} value={formData[field] || ""} style={{border:"1px solid black"}}/>
+                    <input className="rounded-md" key={field} required onChange={handleChange} type="text" name={field} placeholder={`Enter your ${field}`} value={formData[field] || ""} style={{border:"1px solid black"}}/>
                     </div>
                   ))
                 }
