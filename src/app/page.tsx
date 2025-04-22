@@ -1,6 +1,7 @@
 "use client";
 
-import { table } from "node:console";
+import { error } from "console";
+import { SingletonRouter } from "next/router";
 import React from "react";
 import { useEffect, useState } from "react";
 
@@ -13,10 +14,76 @@ export default function Home() {
 
   const [showModal, setShowModal] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [deleteindex, setDeleteIndex] = useState<number | null>(null);
 
+  const [errors, setErrors] = useState<{[key : string] : string}>({});
   const [errorMsg, setErrorMsg] = useState<string>("");
 
+  const [showDelModal, setShowDelModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+
   type formDataType = {[key : string] : string};        // type specification
+
+
+  // custom validations : =========================================📌
+
+  type fieldName = "email" | "phone" | "zip" | "uname" | "notes" | "address" | "city" | "state" | "country" | string;
+
+  const validateField = (name : fieldName, value : string) : string => {
+
+      const trimmedValue = value.trim();
+
+      if(!trimmedValue) {
+        return "this field is required.";
+      }
+
+      switch(name){
+          case "email" : {
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if(!emailRegex.test(trimmedValue)){
+                return "Invalid email format";
+              }
+              break;
+          }
+
+            case "phone" : {
+              const phoneRegex = /^\d{10}$/;
+              if(!phoneRegex.test(trimmedValue)){
+                return "number must be exactly 10 digits";
+              }
+              break;
+          }
+
+            case "zip" : {
+              const zipRegex = /^\d{6}$/;
+              if(!zipRegex.test(trimmedValue)){
+                return "Zip code must be exactly 6 digits";
+              }
+              break;
+          }
+
+            case "uname" : {
+
+              if(trimmedValue.length < 2){
+                return "Name must be at least 2 characters";
+              }
+              break;
+          }
+
+            case "notes" : {
+
+              if(value.length > 50){
+                return "Notes cannot exceed 50 characters";
+              }
+              break;
+          }
+
+          default : 
+          break;
+          
+      }
+        return "";
+  };
 
 
 
@@ -37,10 +104,23 @@ export default function Home() {
 
   // console.log("alldata are :",allData);     //============================================
  
-
-
   const handleChange = (e : React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({...formData, [e.target.name] : e.target.value});
+        const {name, value} = e.target;
+
+        setFormData(prev => ({
+            ...prev, [name] : value,
+        }));
+  };
+
+
+  const handleBlur = (e : React.FocusEvent<HTMLInputElement>) => {
+
+        const{name, value} = e.target;
+
+        const error = validateField(name, value);
+        setErrors(prev => ({...prev, [name] : error}))
+
+        // setFormData({...formData, [e.target.name] : e.target.value});
   };
 
 
@@ -56,42 +136,27 @@ export default function Home() {
 
   const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
 
-    // old code : ===============================📌
-    // e.preventDefault();         // this will prevent the default data submission in browser 📌
-
-    // if(editIndex !==  null){
-
-    //   //editing existing entry : 👍
-    //   const updateData = [...allData];
-    //   updateData[editIndex] = formData;
-    //   setAllData(updateData);
-    //   localStorage.setItem("userData", JSON.stringify(updateData));
-
-    //   // console.log("edit index is : ",editIndex);      // ===================================
-
-    //   setEditIndex(null);    //reset edit mode
-    // }
-    // else{
-      
-    //   // if not editing then show data with new id : 👍
-    //   const newEntry = {id : generateId(), ...formData};      // set auto generated ID
-    //   const updateData : any = [...allData, newEntry];
-    //   setAllData(updateData);
-    //   localStorage.setItem("userData", JSON.stringify(updateData));
-    // }
-
-
-    // NEW CODE : ======================================== 📌
-
-
       e.preventDefault();
 
-      const isEmpty = fields.some(field => !formData[field]?.trim());			// if any field is empty..
+        // validate fields before submitting too : ======👍
 
-      if(isEmpty){
-        setErrorMsg("Please fill out all fields before submitting.");
-        return;           // stops further execution 👍
-      }
+        const newErros : {[key : string] : string} = {};
+
+        fields.forEach(field => {
+
+          const error = validateField(field, formData[field] || "");
+          if(error) newErros[field] = error;
+        });
+
+        if(Object.keys(newErros).length > 0){
+          setErrors(newErros);
+          setErrorMsg("Please fix the error before submitting.");
+          return;
+        }
+
+
+
+      // const isEmail = 
 
       let updateData : any[] = [];
 
@@ -125,22 +190,22 @@ export default function Home() {
 
   const handleEdit = (index : number) => {
 
-    if(window.confirm("do you want to edit this record?")){
+    setShowEditModal(true);
+
         const selectedData = tableData[index];
         setFormData(selectedData);
         setEditIndex(index);
-        setShowModal(true);
-    }
-  }
+        // setShowModal(true);
+  };
 
 
   const handleDelete  = (indexToDelete : number) => {
 
-      if(window.confirm("Are you sure you want to delete this record?")) {
+    setShowDelModal(true);
+
         const updateData = tableData.filter((_, index)=> index !== indexToDelete);
         setTableData(updateData);
         localStorage.setItem("userData", JSON.stringify(updateData));
-      }
   };
 
 
@@ -227,12 +292,11 @@ export default function Home() {
                                       <button className="h-[20px] w-[35px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
                                       onClick={()=>handleEdit(index)}> Edit </button> 
                                       <button className="h-[20px] w-[45px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
-                                      onClick={()=>handleDelete(index)}> Delete </button> 
+                                      onClick={()=> {setDeleteIndex(index); setShowDelModal(true);}}> Delete </button> 
                                   </td>
 
                               </tr>
                             ))
-
                           )
                         }
 
@@ -241,6 +305,66 @@ export default function Home() {
 
 
                 </div>
+
+                {
+                    showEditModal && (
+                  <>
+                    <div className="w-full h-full fixed items-center justify-center z-10 top-0" tabIndex={-1}> 
+
+                        <div className="absolute inset-0 bg-black opacity-40 z-10" tabIndex={-2}> </div>
+
+                          <div className="relative w-[350px] h-[200px] mx-auto flex flex-col items-center justify-center mt-[30px] rounded-xl bg-white text-black z-30 opacity-100"> 
+                            <h1 className="absolute mt-[-145px] text-[24px] font-bold text-[#808080] ml-[-260px]" style={{border:"0px solid black"}}> Edit </h1>
+                            <h1 className="absolute text-[18px] mt-[-25px] font-semibold" style={{border:"0px solid black"}}> Do you want to edit this data? </h1>
+
+                            <div className="absolute w-full mt-[140px] h-[50px] flex flex-row items-center justify-center space-x-[170px]" style={{border:"0px solid black"}}> 
+                                <button className="w-[75px] h-[35px] bg-white text-black ring-1 ring-black rounded-lg font-semibold cursor-pointer hover:bg-black hover:text-white"
+                                onClick={()=>setShowEditModal(false)}> Cancel </button>
+
+                                <button className="w-[75px] h-[35px] bg-white ring-1 ring-black text-black font-semibold rounded-lg cursor-pointer hover:bg-[#4286f4] hover:text-white"
+                                onClick={()=> {setShowEditModal(false); setShowModal(true);}}> Edit </button>
+                              
+                            </div>
+                          </div>
+                    </div>
+                </>  
+                  )
+                }
+
+
+
+                  {
+                    showDelModal && (
+                  <>
+                    <div className="w-full h-full fixed items-center justify-center z-10 top-0" tabIndex={-1}> 
+
+                        <div className="absolute inset-0 bg-black opacity-40 z-10" tabIndex={-2}> </div>
+
+                          <div className="relative w-[350px] h-[200px] mx-auto flex flex-col items-center justify-center mt-[30px] rounded-xl bg-white text-black z-30 opacity-100"> 
+                            <h1 className="absolute mt-[-145px] text-[24px] font-bold text-[#808080] ml-[-260px]" style={{border:"0px solid black"}}> Delete </h1>
+                            <h1 className="absolute text-[18px] mt-[-25px] font-semibold" style={{border:"0px solid black"}}> Do you want to delete this data? </h1>
+
+                            <div className="absolute w-full mt-[140px] h-[50px] flex flex-row items-center justify-center space-x-[170px]" style={{border:"0px solid black"}}> 
+                                <button className="w-[75px] h-[35px] bg-white text-black ring-1 ring-black rounded-lg font-semibold cursor-pointer hover:bg-black hover:text-white"
+                                onClick={()=>setShowDelModal(false)}> Cancel </button>
+
+                                <button className="w-[75px] h-[35px] bg-white ring-1 ring-black text-black font-semibold rounded-lg cursor-pointer hover:bg-[#FF0000] hover:text-white"
+                                onClick={()=>{
+                                    if(deleteindex !== null)  { 
+                                        handleDelete(deleteindex);
+                                        setShowDelModal(false);
+                                        setDeleteIndex(null);
+                                    }
+                                }}> Delete </button>
+                              
+                            </div>
+                          </div>
+                    </div>
+                </>  
+                  )
+                }
+
+
               
 
               {
@@ -252,57 +376,119 @@ export default function Home() {
           <div className="absolute inset-0 bg-black opacity-40 z-10 transition-opacity duration-300 ease-in-out" tabIndex={-2} style={{animation : "fadeInModal 0.2s forwards"}}>  </div>
 
                   {/* modal */}
-            <div className="relative w-[410px] h-[490px] bg-white text-black shadow-lg z-30 opacity-100" style={{border:"3px solid skyblue"}}> 
+            <div className="relative w-[450px] h-[510px] bg-white text-black shadow-lg z-30 opacity-100" style={{border:"3px solid skyblue"}}> 
 
-              <form onSubmit={handleSubmit} className="relative flex flex-col h-full w-full mx-auto items-center justify-center space-y-4" tabIndex={-10} style={{border:"0px solid blue"}}>
+              <form onSubmit={handleSubmit} className="relative flex flex-col h-full w-full mx-auto items-center justify-center space-y-[6px]" tabIndex={-10} style={{border:"0px solid blue"}}>
 
-                  <div className="flex flex-row"> 
-                      <h1 className="w-[110px] font-semibold"> First Name : </h1>  <input type="text" name="uname" value={formData["uname"] || ""} onChange={handleChange} className="focus:ring-[1.5px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
-                  </div>
+                  <div className="flex flex-row items-center justify-center"> 
+                      <h1 className="w-[110px] text-[15px] font-semibold"> First Name : </h1>
+                        <div className="flex flex-col">  
+                          <input type="text" name="uname" value={formData["uname"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
 
-                  <div className="flex flex-row">
-                      <h1 className="w-[110px] font-semibold"> Email : </h1>   <input type="email" name="email" value={formData["email"] || ""} onChange={handleChange} className="focus:ring-[1.5px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
-                  </div>
-
-                  <div className="flex flex-row">
-                      <h1 className="w-[110px] font-semibold"> Phone no. : </h1>   <input type="text" maxLength={10} name="phone" value={formData["phone"] || ""} onChange={handleChange} className="focus:ring-[1.5px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
-                  </div>
-
-                  <div className="flex flex-row">
-                      <h1 className="w-[110px] font-semibold"> Address : </h1>   <input type="text" name="address" value={formData["address"] || ""} onChange={handleChange} className="focus:ring-[1.5px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
-                  </div>
-
-                  <div className="flex flex-row">
-                      <h1 className="w-[110px] font-semibold"> City : </h1>   <input type="text" name="city" value={formData["city"] || ""} onChange={handleChange} className="focus:ring-[1.5px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
-                  </div>
-
-                  <div className="flex flex-row">
-                      <h1 className="w-[110px] font-semibold"> State : </h1>   <input type="text" name="state" value={formData["state"] || ""} onChange={handleChange} className="focus:ring-[1.5px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
-                  </div>
-
-                  <div className="flex flex-row">
-                      <h1 className="w-[110px] font-semibold"> Zip : </h1>   <input type="text" name="zip" value={formData["zip"] || ""} maxLength={6} onChange={handleChange} className="focus:ring-[1.5px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
-                  </div>
-
-                  <div className="flex flex-row">
-                      <h1 className="w-[110px] font-semibold"> Country : </h1>   <input type="text" name="country" value={formData["country"] || ""} onChange={handleChange} className="focus:ring-[1.5px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
-                  </div>
-
-                  <div className="flex flex-row">
-                      <h1 className="w-[110px] font-semibold"> Notes : </h1>   <input type="text" name="notes" value={formData["notes"] || ""} onChange={handleChange} className="focus:ring-[1.5px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
-                  </div>
-
-
-                  {
-                    errorMsg && (
-                      <div className="text-red-500 text-md font-semibold">  
-                          {errorMsg}
+                            {errors["uname"]&& (
+                                <div className="text-red-500 text-xs font-semibold"> {errors["uname"]} </div> 
+                            )}
                       </div>
-                    )
-                  }
+                  </div>
 
 
-                  <button type="submit" className="mt-[10px] w-[100px] h-[30px] text-[15px] font-semibold rounded-lg bg-black text-white hover:bg-slate-600 active:bg-slate-800"
+                  <div className="flex flex-row items-center justify-center">
+                      <h1 className="w-[110px] text-[15px] font-semibold"> Email : </h1>
+                        <div className="flex flex-col">  
+                            <input type="email" name="email" value={formData["email"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
+
+                            {errors["email"] && (
+                              <div className="text-red-500 text-xs font-semibold mt-[2px]"> {errors["email"]} </div> 
+                            )}
+                        </div>
+                  </div>
+
+                  
+                  <div className="flex flex-row items-center justify-center">
+                      <h1 className="w-[110px] text-[15px] font-semibold"> Phone no. : </h1>
+                        <div className="flex flex-col"> 
+                            <input type="text" maxLength={10} name="phone" value={formData["phone"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
+
+                            {errors["phone"] && (
+                              <div className="text-red-500 text-xs font-semibold mt-[2px]"> {errors["phone"]} </div> 
+                            )}
+                        </div>
+                  </div>
+
+
+                  <div className="flex flex-row items-center justify-center">
+                      <h1 className="w-[110px] text-[15px] font-semibold"> Address : </h1>
+                          <div className="flex flex-col"> 
+                              <input type="text" name="address" value={formData["address"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
+
+                                {errors["address"] && (
+                                  <div className="text-red-500 text-xs font-semibold mt-[2px]"> {errors["address"]} </div> 
+                                )}
+                          </div>
+                  </div>
+
+
+                  <div className="flex flex-row items-center justify-center">
+                      <h1 className="w-[110px] text-[15px] font-semibold"> City : </h1>
+                        <div className="flex flex-col"> 
+                            <input type="text" name="city" value={formData["city"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
+
+                            {errors["city"] && (
+                              <div className="text-red-500 text-xs font-semibold mt-[2px]"> {errors["city"]} </div> 
+                            )}
+                        </div>
+                  </div>
+
+
+                  <div className="flex flex-row items-center justify-center">
+                      <h1 className="w-[110px] text-[15px] font-semibold"> State : </h1>
+                        <div className="flex flex-col"> 
+                          <input type="text" name="state" value={formData["state"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
+
+                            {errors["state"] && (
+                              <div className="text-red-500 text-xs font-semibold mt-[2px]"> {errors["state"]} </div> 
+                            )}
+                        </div>
+                  </div>
+
+
+                  <div className="flex flex-row items-center justify-center">
+                      <h1 className="w-[110px] text-[15px] font-semibold"> Zip : </h1>
+                      <div className="flex flex-col">  
+                          <input type="text" name="zip" value={formData["zip"] || ""} maxLength={6} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
+                          
+                          {errors["zip"] && (
+                            <div className="text-red-500 text-xs font-semibold mt-[2px]"> {errors["zip"]} </div> 
+                          )}
+                      </div>
+                  </div>
+
+
+                  <div className="flex flex-row items-center justify-center">
+                      <h1 className="w-[110px] text-[15px] font-semibold"> Country : </h1>
+                        <div className="flex flex-col">  
+                          <input type="text" name="country" value={formData["country"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
+
+                            {errors["country"] && (
+                              <div className="text-red-500 text-xs font-semibold mt-[2px]"> {errors["country"]} </div> 
+                            )}
+                        </div>
+                  </div>
+
+
+                  <div className="flex flex-row items-center justify-center">
+                      <h1 className="w-[110px] text-[15px] font-semibold"> Notes : </h1>
+                        <div className="flex flex-col">  
+                              <input type="text" name="notes" value={formData["notes"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
+
+                            {errors["notes"]&& (
+                              <div className="text-red-500 text-xs font-semibold mt-[2px]"> {errors["notes"]} </div> 
+                            )}
+                        </div>
+                  </div>
+
+
+                  <button type="submit" className="mt-[12px] w-[200px] h-[30px] text-[15px] font-semibold rounded-lg bg-black text-white hover:bg-slate-600 active:bg-slate-800"
                   > Submit </button>
 
               </form>
