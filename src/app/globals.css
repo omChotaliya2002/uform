@@ -26,3 +26,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes fadeInModal {
+
+  from{
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { table } from "node:console";
 import React from "react";
 import { useEffect, useState } from "react";
 
@@ -9,12 +9,10 @@ export default function Home() {
 
   const fields = ["uname", "email","phone", "address","city", "state", "zip", "country", "notes"];
   const [formData, setFormData] = useState<{[key : string] : string}>({});  //object where key and values are string👍
-  const [allData, setAllData] = useState<{[key : string] : string}[]>([]);   //object where key and values are string👍
-
   const [tableData, setTableData] = useState<{[key : string] : string}[]>([]);;
 
   const [showModal, setShowModal] = useState(false);
-  // const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const [errorMsg, setErrorMsg] = useState<string>("");
 
@@ -30,7 +28,7 @@ export default function Home() {
       fields.forEach(field => initialData[field] = "");
       setFormData(initialData);
 
-      const storedData = JSON.parse(localStorage.getItem("userData") || "[]");  //if "getitem" returns null it falls back to an empty string array👍
+      const storedData : formDataType[] = JSON.parse(localStorage.getItem("userData") || "[]");  //if "getitem" returns null it falls back to an empty string array👍
       setTableData(storedData);
 
 
@@ -47,9 +45,13 @@ export default function Home() {
 
 
   // to generate unique id for user : 👍
+
+  // return `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
   const generateId = () => {
-    return `${Date.now()}-${Math.floor(Math.random() * 1000)}`;   //generates id like : 1713483848392-832📌
+          return (tableData.length + 1).toString();  //will generate id like 1,2,3...📌
   }
+
 
 
   const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
@@ -79,15 +81,6 @@ export default function Home() {
     // }
 
 
-
-    // //clear form : 👍
-    // const clearData : formDataType = {};
-    // fields.forEach(field => clearData[field] = "");
-    // setFormData(clearData);
-
-    // setShowModal(true);
-
-
     // NEW CODE : ======================================== 📌
 
 
@@ -100,10 +93,20 @@ export default function Home() {
         return;           // stops further execution 👍
       }
 
-      setTableData([...tableData, formData]);
+      let updateData : any[] = [];
 
-      const newEntry = {id : generateId(), ...formData};      // set auto generated ID
-        const updateData : any = [...allData, newEntry];
+      if(formData.id){
+        updateData = tableData.map((entry)=> 
+        
+          entry.id === formData.id ? {...entry, ...formData} : entry
+        );
+      }
+      else{
+              //generating new entry : 
+            const newEntry = {id : generateId(), ...formData};
+            updateData = [...tableData, newEntry];
+      }
+
         setTableData(updateData);
         localStorage.setItem("userData", JSON.stringify(updateData));
 
@@ -120,22 +123,25 @@ export default function Home() {
 
 
 
-  // const handleEdit = (index : number) => {
-  //   const selectedData = allData[index];
-  //   setFormData(selectedData);
-  //   setEditIndex(index);
-  //   setShowModal(false);
-  // }
+  const handleEdit = (index : number) => {
+
+    if(window.confirm("do you want to edit this record?")){
+        const selectedData = tableData[index];
+        setFormData(selectedData);
+        setEditIndex(index);
+        setShowModal(true);
+    }
+  }
 
 
-  // const handleDelete  = (indexToDelete : number) => {
+  const handleDelete  = (indexToDelete : number) => {
 
-  //     if(window.confirm("Are you sure you want to delete this record?")) {
-  //       const updateData = allData.filter((_, index)=> index !== indexToDelete);
-  //       setAllData(updateData);
-  //       localStorage.setItem("userData", JSON.stringify(updateData));
-  //     }
-  // };
+      if(window.confirm("Are you sure you want to delete this record?")) {
+        const updateData = tableData.filter((_, index)=> index !== indexToDelete);
+        setTableData(updateData);
+        localStorage.setItem("userData", JSON.stringify(updateData));
+      }
+  };
 
 
   // lock the background when modal is open : 👍
@@ -162,31 +168,37 @@ export default function Home() {
   return (
     <>
        
-          <div className="relative form flex flex-col items-center justify-center h-[530px]" style={{border:"0px solid black"}}> 
+          <div className="form flex flex-col items-center justify-center py-8 px-4" style={{border:"0px solid black"}}> 
 
-                <div className="absolute mt-[-300px]" style={{border:"0px solid black"}}>
-                  <h1 className="font-semibold underline underline-offset-4 text-xl"> User Details  </h1>
+                <div className="mt-[50px] w-full flex flex-row items-center justify-center space-x-[670px] max-w-[900px] mb-4" style={{border:"0px solid black"}}>
+
+                  <h1 className="font-semibold underline underline-offset-4 text-2xl"> User Details  </h1>
+
+                  <button className="w-[90px] h-[25px] bg-black text-white font-semibold text-sm hover:rounded-lg hover:cursor-pointer hover:bg-slate-700 transition-all delay-100"
+                    onClick={()=> setShowModal(true)}> &#x2b; Add Data </button>
+
                 </div>
 
 
                   {/* CUTSTOM TABLE :  */}
-                <div className="absolute w-[800px] datatable flex items-center justify-center" style={{border:"0px solid blue"}}>
+                <div className="datatable w-full max-w-[920px] p-2 overflow-y-auto flex items-center justify-center" style={{border:"0px solid blue"}}>
 
-                    <table className="w-[800px] text-center" style={{border:"0px solid red"}}>
+                    <table className="table-auto w-full text-center border-collapse" style={{border:"0px solid red"}}>
 
-                      <thead style={{border:"1.5px solid black"}}>
+                      <thead className="sticky top-0 bg-amber-200" style={{border:"1.5px solid black"}}>
 
-                        <tr style={{border:"0px solid red"}}>
-                            <th className="border-[1.5px] px-3 border-black"> ID </th>
-                            <th className="border-[1.5px] px-3 border-black"> Uname </th>
-                            <th className="border-[1.5px] px-3 border-black"> Email </th>
-                            <th className="border-[1.5px] px-3 border-black"> Phone </th>
-                            <th className="border-[1.5px] px-3 border-black"> Address </th>
-                            <th className="border-[1.5px] px-3 border-black"> City </th>
-                            <th className="border-[1.5px] px-3 border-black"> State </th>
-                            <th className="border-[1.5px] px-3 border-black"> Zip </th>
-                            <th className="border-[1.5px] px-3 border-black"> Country </th>
-                            <th className="border-[1.5px] px-3 border-black"> Notes </th>
+                        <tr className="" style={{border:"0px solid red"}}>
+                            <th className="border-[1.5px] p-3 border-black"> ID </th>
+                            <th className="border-[1.5px] p-3 border-black"> Uname </th>
+                            <th className="border-[1.5px] p-3 border-black"> Email </th>
+                            <th className="border-[1.5px] p-3 border-black"> Phone </th>
+                            <th className="border-[1.5px] p-3 border-black"> Address </th>
+                            <th className="border-[1.5px] p-3 border-black"> City </th>
+                            <th className="border-[1.5px] p-3 border-black"> State </th>
+                            <th className="border-[1.5px] p-3 border-black"> Zip </th>
+                            <th className="border-[1.5px] p-3 border-black"> Country </th>
+                            <th className="border-[1.5px] p-3 border-black"> Notes </th>
+                            <th className="border-[1.5px] p-3 border-black"> Actions </th>
                         </tr>
                       </thead>
 
@@ -195,7 +207,7 @@ export default function Home() {
                         {
                           tableData.length === 0 ? (
                               <tr className="" style={{border:"1.5px solid black"}}>
-                                  <td colSpan={10} className="font-semibold text-xl text-center" style={{border:"0px solid red"}}> No data found </td>
+                                  <td colSpan={11} className="font-semibold text-lg text-center" style={{border:"0px solid red"}}> No data found </td>
                               </tr>
                           ) : (
 
@@ -209,7 +221,15 @@ export default function Home() {
   
                                       <td key={field} className="font-semibold px-2 w-[50px] h-[30px] text-[11px]" style={{border:"1.5px solid black"}}> {data[field]} </td>
   
-                                  ))}   
+                                  ))} 
+
+                                  <td className="space-x-1"> 
+                                      <button className="h-[20px] w-[35px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
+                                      onClick={()=>handleEdit(index)}> Edit </button> 
+                                      <button className="h-[20px] w-[45px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
+                                      onClick={()=>handleDelete(index)}> Delete </button> 
+                                  </td>
+
                               </tr>
                             ))
 
@@ -219,13 +239,6 @@ export default function Home() {
                       </tbody>          
                     </table> 
 
-                    <div className="absolute flex items-center justify-center">
-
-                      <button className="mt-[200px] w-[100px] h-[40px] bg-black text-white font-semibold text-lg rounded-lg hover:cursor-pointer hover:bg-slate-700"
-                        onClick={()=> setShowModal(true)}>  Add data </button>
-
-                    </div>
-
 
                 </div>
               
@@ -233,10 +246,15 @@ export default function Home() {
               {
                 showModal && (
 
-          <div className="w-full h-full flex items-center justify-center bg-black opacity-95" style={{border:"0px solid skyblue"}}> 
-            <div className="w-[400px] h-[450px] bg-white text-black"> 
+        <div className="w-full h-full fixed flex items-center justify-center z-20 top-0" tabIndex={-1} style={{border:"0px solid green"}}> 
 
-                    <form onSubmit={handleSubmit} className="flex flex-col h-[400px] mt-[30px] items-center justify-center space-y-3" style={{border:"0px solid blue"}}>
+            {/* background overlay */}
+          <div className="absolute inset-0 bg-black opacity-40 z-10 transition-opacity duration-300 ease-in-out" tabIndex={-2} style={{animation : "fadeInModal 0.2s forwards"}}>  </div>
+
+                  {/* modal */}
+            <div className="relative w-[410px] h-[490px] bg-white text-black shadow-lg z-30 opacity-100" style={{border:"3px solid skyblue"}}> 
+
+              <form onSubmit={handleSubmit} className="relative flex flex-col h-full w-full mx-auto items-center justify-center space-y-4" tabIndex={-10} style={{border:"0px solid blue"}}>
 
                   <div className="flex flex-row"> 
                       <h1 className="w-[110px] font-semibold"> First Name : </h1>  <input type="text" name="uname" value={formData["uname"] || ""} onChange={handleChange} className="focus:ring-[1.5px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
@@ -294,6 +312,7 @@ export default function Home() {
 
                 )
               }
+              
             
           </div>
 
