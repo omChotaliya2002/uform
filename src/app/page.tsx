@@ -34,7 +34,7 @@ export default function Home() {
       const trimmedValue = value.trim();
 
       if(!trimmedValue) {
-        return "this field is required.";
+        return `${name} is required.`;
       }
 
       switch(name){
