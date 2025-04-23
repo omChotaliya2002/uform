@@ -1,14 +1,13 @@
 "use client";
 
-import { error } from "console";
-import { SingletonRouter } from "next/router";
+
 import React from "react";
 import { useEffect, useState } from "react";
 
 
 export default function Home() {
 
-  const fields = ["uname", "email","phone", "address","city", "state", "zip", "country", "notes"];
+  const fields = ["name", "email","phone", "address","city", "state", "zip", "country", "notes"];
   const [formData, setFormData] = useState<{[key : string] : string}>({});  //object where key and values are string👍
   const [tableData, setTableData] = useState<{[key : string] : string}[]>([]);;
 
@@ -25,16 +24,34 @@ export default function Home() {
   type formDataType = {[key : string] : string};        // type specification
 
 
+  // Proper field error message : ======================📌
+
+  const requiredFieldMsg :{[key : string] : string} = {
+
+      name : "User name is required.",
+      email : "Email address is required.",
+      phone : "Phone no. is required.",
+      address : "Address is required.",
+      city : "City name is required.",
+      state : "State name is required.",
+      zip : "Zip code is required.",
+      country : "Country name is required.",
+      notes : "Notes is required."
+
+  }
+
+
+
   // custom validations : =========================================📌
 
-  type fieldName = "email" | "phone" | "zip" | "uname" | "notes" | "address" | "city" | "state" | "country" | string;
+  type fieldName = "email" | "phone" | "zip" | "name" | "notes" | "address" | "city" | "state" | "country" | string;
 
   const validateField = (name : fieldName, value : string) : string => {
 
       const trimmedValue = value.trim();
 
       if(!trimmedValue) {
-        return `${name} is required.`;
+        return requiredFieldMsg[name] || `${name} is required.`;
       }
 
       switch(name){
@@ -62,7 +79,7 @@ export default function Home() {
               break;
           }
 
-            case "uname" : {
+            case "name" : {
 
               if(trimmedValue.length < 2){
                 return "Name must be at least 2 characters";
@@ -254,7 +271,7 @@ export default function Home() {
 
                         <tr className="" style={{border:"0px solid red"}}>
                             <th className="border-[1.5px] p-3 border-black"> ID </th>
-                            <th className="border-[1.5px] p-3 border-black"> Uname </th>
+                            <th className="border-[1.5px] p-3 border-black"> Name </th>
                             <th className="border-[1.5px] p-3 border-black"> Email </th>
                             <th className="border-[1.5px] p-3 border-black"> Phone </th>
                             <th className="border-[1.5px] p-3 border-black"> Address </th>
@@ -383,10 +400,10 @@ export default function Home() {
                   <div className="flex flex-row items-center justify-center"> 
                       <h1 className="w-[110px] text-[15px] font-semibold"> First Name : </h1>
                         <div className="flex flex-col">  
-                          <input type="text" name="uname" value={formData["uname"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
+                          <input type="text" name="name" value={formData["name"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
 
-                            {errors["uname"]&& (
-                                <div className="text-red-500 text-xs font-semibold"> {errors["uname"]} </div> 
+                            {errors["name"]&& (
+                                <div className="text-red-500 text-xs font-semibold"> {errors["name"]} </div> 
                             )}
                       </div>
                   </div>
