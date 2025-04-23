@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 
 import React from "react";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ export default function Home() {
 
   const fields = ["name", "email","phone", "address","city", "state", "zip", "country", "notes"];
   const [formData, setFormData] = useState<{[key : string] : string}>({});  //object where key and values are string👍
-  const [tableData, setTableData] = useState<{[key : string] : string}[]>([]);;
+  const [tableData, setTableData] = useState<{[key : string] : string}[]>([]);
 
   const [showModal, setShowModal] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -327,8 +327,14 @@ export default function Home() {
                       </tbody>          
                     </table> 
 
-
                 </div>
+
+
+
+                    <Link href={"/uform"}>
+                    <button className="mt-[50px] w-[300px] h-[40px] bg-black text-white text-[20px] rounded-md cursor-pointer font-semibold"> go to formik form </button>
+                    </Link>
+
 
                 {
                     showEditModal && (
