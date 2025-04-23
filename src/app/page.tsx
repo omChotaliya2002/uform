@@ -127,7 +127,15 @@ export default function Home() {
         setFormData(prev => ({
             ...prev, [name] : value,
         }));
-  };
+
+        setErrors(prevErrors => {
+          const newErrors = {...prevErrors};
+          if(newErrors[name]){
+            delete newErrors[name];
+          }
+          return newErrors;
+        });
+    };
 
 
   const handleBlur = (e : React.FocusEvent<HTMLInputElement>) => {
@@ -137,7 +145,6 @@ export default function Home() {
         const error = validateField(name, value);
         setErrors(prev => ({...prev, [name] : error}))
 
-        // setFormData({...formData, [e.target.name] : e.target.value});
   };
 
 
