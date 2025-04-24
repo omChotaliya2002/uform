@@ -22,6 +22,9 @@ export default function Home() {
   const [showEditModal, setShowEditModal] = useState(false);
 
   type formDataType = {[key : string] : string};        // type specification
+  
+  const [page, setPage] = useState(1);           // for pagination
+  const rowsPerPage = 5;                        // for pagination
 
 
   // Proper field error message : ======================📌
@@ -259,7 +262,7 @@ export default function Home() {
        
           <div className="form flex flex-col items-center justify-center py-8 px-4" style={{border:"0px solid black"}}> 
 
-                <div className="mt-[50px] w-full flex flex-row items-center justify-center space-x-[670px] max-w-[900px] mb-4" style={{border:"0px solid black"}}>
+                <div className="mt-[50px] w-full flex flex-row items-center justify-center space-x-[865px] max-w-[1100px] mb-4" style={{border:"0px solid black"}}>
 
                   <h1 className="font-semibold underline underline-offset-4 text-2xl"> User Details  </h1>
 
@@ -270,24 +273,24 @@ export default function Home() {
 
 
                   {/* CUTSTOM TABLE :  */}
-                <div className="datatable w-full max-w-[920px] p-2 overflow-y-auto flex items-center justify-center" style={{border:"0px solid blue"}}>
+                <div className="datatable flex flex-col w-full max-w-[1100px] p-2 overflow-y-auto items-center justify-center" style={{border:"2px solid blue"}}>
 
                     <table className="table-auto w-full text-center border-collapse" style={{border:"0px solid red"}}>
 
-                      <thead className="sticky top-0 bg-amber-200" style={{border:"1.5px solid black"}}>
+                      <thead className="sticky text-[15px] top-0 bg-amber-200" style={{border:"1.5px solid black"}}>
 
                         <tr className="" style={{border:"0px solid red"}}>
-                            <th className="border-[1.5px] p-3 border-black"> ID </th>
-                            <th className="border-[1.5px] p-3 border-black"> Name </th>
-                            <th className="border-[1.5px] p-3 border-black"> Email </th>
-                            <th className="border-[1.5px] p-3 border-black"> Phone </th>
-                            <th className="border-[1.5px] p-3 border-black"> Address </th>
-                            <th className="border-[1.5px] p-3 border-black"> City </th>
-                            <th className="border-[1.5px] p-3 border-black"> State </th>
-                            <th className="border-[1.5px] p-3 border-black"> Zip </th>
-                            <th className="border-[1.5px] p-3 border-black"> Country </th>
-                            <th className="border-[1.5px] p-3 border-black"> Notes </th>
-                            <th className="border-[1.5px] p-3 border-black"> Actions </th>
+                            <th className="border-[1.5px] p-[2px] w-[40px] border-black"> ID </th>
+                            <th className="border-[1.5px] p-[2px] w-[150px] border-black"> Name </th>
+                            <th className="border-[1.5px] p-[2px] w-[190px] border-black"> Email </th>
+                            <th className="border-[1.5px] p-[2px] border-black"> Phone </th>
+                            <th className="border-[1.5px] p-[2px] w-[200px] border-black"> Address </th>
+                            <th className="border-[1.5px] p-[2px] border-black"> City </th>
+                            <th className="border-[1.5px] p-[2px] w-[60px] border-black"> State </th>
+                            <th className="border-[1.5px] p-[2px] border-black"> Zip </th>
+                            <th className="border-[1.5px] p-[2px] w-[70px] border-black"> Country </th>
+                            <th className="border-[1.5px] p-[2px] w-[100px] border-black"> Notes </th>
+                            <th className="border-[1.5px] p-[2px] w-[110px] border-black"> Actions </th>
                         </tr>
                       </thead>
 
@@ -300,7 +303,8 @@ export default function Home() {
                               </tr>
                           ) : (
 
-                            tableData.map((data, index)=> (
+                            tableData .slice((page - 1) * rowsPerPage, page * rowsPerPage)       // it will show 5-5 data for each page
+                            .map((data, index)=> (
 
                               <tr key={index} style={{border:"1.5px solid black"}}> 
   
@@ -326,6 +330,17 @@ export default function Home() {
 
                       </tbody>          
                     </table> 
+
+                    <div className="mt-[8px] w-full flex items-center justify-center space-x-[445px]" style={{border:"0px solid black"}}>
+                          <button className="text-[13px] w-[80px] h-[26px] rounded-md font-semibold bg-black text-white hover:cursor-pointer hover:bg-gray-700" 
+                            onClick={()=> setPage((prev)=> Math.max(prev - 1, 1))}> &#x2190; Previous </button>
+
+                          <span className="text-sm font-semibold"> Page {page} </span>
+
+                          <button className="text-[13px] w-[65px] h-[26px] rounded-md font-semibold bg-black text-white hover:cursor-pointer hover:bg-gray-700" 
+                            onClick={()=> setPage((prev)=> (prev * rowsPerPage < tableData.length ? prev + 1 : prev))}> Next &#x2192; </button>
+
+                    </div>
 
                 </div>
 
