@@ -262,7 +262,7 @@ export default function Home() {
        
           <div className="form flex flex-col items-center justify-center py-8 px-4" style={{border:"0px solid black"}}> 
 
-                <div className="mt-[50px] w-full flex flex-row items-center justify-center space-x-[865px] max-w-[1100px] mb-4" style={{border:"0px solid black"}}>
+                <div className="mt-[50px] w-full flex flex-row items-center justify-center space-x-[850px] max-w-[1100px] mb-4" style={{border:"0px solid black"}}>
 
                   <h1 className="font-semibold underline underline-offset-4 text-2xl"> User Details  </h1>
 
@@ -273,7 +273,7 @@ export default function Home() {
 
 
                   {/* CUTSTOM TABLE :  */}
-                <div className="datatable flex flex-col w-full max-w-[1100px] p-2 overflow-y-auto items-center justify-center" style={{border:"2px solid blue"}}>
+                <div className="datatable flex flex-col w-full max-w-[1100px] p-2 overflow-y-auto items-center justify-center" style={{border:"0px solid blue"}}>
 
                     <table className="table-auto w-full text-center border-collapse" style={{border:"0px solid red"}}>
 
