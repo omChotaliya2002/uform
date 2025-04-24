@@ -280,9 +280,19 @@ const page = () => {
 
                         <Formik initialValues={formData.id ? formData : initialValues} validationSchema={validationSchema} onSubmit={handleSubmit} enableReinitialize>
 
-                            <Form className="relative flex flex-col h-full w-full mx-auto items-center justify-center space-y-[3px]" tabIndex={-10} style={{border:"0px solid blue"}}>
+                            <Form className="relative flex flex-col h-full w-full mx-auto items-center justify-center space-y-[1px]" tabIndex={-10} style={{border:"0px solid blue"}}>
 
-                                <div className='flex flex-row'>
+
+                              {/* CLOSE BUTTON :  */}
+                              <div className="absolute mt-[-460px] ml-[400px] w-[30px] h-[30px]" style={{border:"0px solid red"}}> 
+
+                                  <button className="text-center w-full h-full bg-white text-black font-extrabold text-[18px] hover:cursor-pointer hover:scale-125"
+                                  onClick={()=> setShowModal(false)}> &#x2716; </button>
+
+                              </div>
+
+
+                                <div className='flex flex-row mt-[30px]'>
                                     <h1 className="w-[110px] text-[15px] font-semibold"> User Name : </h1>
                                     <div className='flex flex-col'>
                                         <Field name="name" type="text" className="focus:ring-[1.5px] w-[220px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"1px solid black"}}/>
@@ -354,7 +364,7 @@ const page = () => {
                                     </div>
                                 </div>
 
-                                <button type="submit" className="mt-[12px] w-[200px] h-[30px] text-[15px] font-semibold rounded-lg bg-black text-white hover:bg-slate-600 active:bg-slate-800"
+                                <button type="submit" className="mt-[8px] w-[200px] h-[30px] text-[15px] font-semibold rounded-lg bg-black text-white hover:bg-slate-600 active:bg-slate-800"
                                     > Submit </button>
 
 

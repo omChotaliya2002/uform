@@ -408,9 +408,18 @@ export default function Home() {
                   {/* modal */}
             <div className="relative w-[450px] h-[510px] bg-white text-black shadow-lg z-30 opacity-100" style={{border:"3px solid skyblue"}}> 
 
-              <form onSubmit={handleSubmit} className="relative flex flex-col h-full w-full mx-auto items-center justify-center space-y-[6px]" tabIndex={-10} style={{border:"0px solid blue"}}>
+              <form onSubmit={handleSubmit} className="relative flex flex-col h-full w-full mx-auto items-center justify-center space-y-[3px]" tabIndex={-10} style={{border:"0px solid blue"}}>
 
-                  <div className="flex flex-row items-center justify-center"> 
+                {/* CLOSE BUTTON :  */}
+                <div className="absolute mt-[-460px] ml-[400px] w-[30px] h-[30px]" style={{border:"0px solid red"}}> 
+
+                    <button className="text-center w-full h-full bg-white text-black font-extrabold text-[18px] hover:cursor-pointer hover:scale-125"
+                     onClick={()=> setShowModal(false)}> &#x2716; </button>
+
+                </div>
+
+
+                  <div className="flex flex-row items-center justify-center mt-[10px]" style={{border:"0px solid black"}}> 
                       <h1 className="w-[110px] text-[15px] font-semibold"> First Name : </h1>
                         <div className="flex flex-col">  
                           <input type="text" name="name" value={formData["name"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
@@ -422,7 +431,7 @@ export default function Home() {
                   </div>
 
 
-                  <div className="flex flex-row items-center justify-center">
+                  <div className="flex flex-row items-center justify-center " style={{border:"0px solid black"}}>
                       <h1 className="w-[110px] text-[15px] font-semibold"> Email : </h1>
                         <div className="flex flex-col">  
                             <input type="email" name="email" value={formData["email"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
@@ -434,7 +443,7 @@ export default function Home() {
                   </div>
 
                   
-                  <div className="flex flex-row items-center justify-center">
+                  <div className="flex flex-row items-center justify-center " style={{border:"0px solid black"}}>
                       <h1 className="w-[110px] text-[15px] font-semibold"> Phone no. : </h1>
                         <div className="flex flex-col"> 
                             <input type="text" maxLength={10} name="phone" value={formData["phone"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
@@ -446,7 +455,7 @@ export default function Home() {
                   </div>
 
 
-                  <div className="flex flex-row items-center justify-center">
+                  <div className="flex flex-row items-center justify-center " style={{border:"0px solid black"}}>
                       <h1 className="w-[110px] text-[15px] font-semibold"> Address : </h1>
                           <div className="flex flex-col"> 
                               <input type="text" name="address" value={formData["address"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
@@ -458,7 +467,7 @@ export default function Home() {
                   </div>
 
 
-                  <div className="flex flex-row items-center justify-center">
+                  <div className="flex flex-row items-center justify-center " style={{border:"0px solid black"}}>
                       <h1 className="w-[110px] text-[15px] font-semibold"> City : </h1>
                         <div className="flex flex-col"> 
                             <input type="text" name="city" value={formData["city"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
@@ -470,7 +479,7 @@ export default function Home() {
                   </div>
 
 
-                  <div className="flex flex-row items-center justify-center">
+                  <div className="flex flex-row items-center justify-center " style={{border:"0px solid black"}}>
                       <h1 className="w-[110px] text-[15px] font-semibold"> State : </h1>
                         <div className="flex flex-col"> 
                           <input type="text" name="state" value={formData["state"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
@@ -482,7 +491,7 @@ export default function Home() {
                   </div>
 
 
-                  <div className="flex flex-row items-center justify-center">
+                  <div className="flex flex-row items-center justify-center " style={{border:"0px solid black"}}>
                       <h1 className="w-[110px] text-[15px] font-semibold"> Zip : </h1>
                       <div className="flex flex-col">  
                           <input type="text" name="zip" value={formData["zip"] || ""} maxLength={6} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
@@ -494,7 +503,7 @@ export default function Home() {
                   </div>
 
 
-                  <div className="flex flex-row items-center justify-center">
+                  <div className="flex flex-row items-center justify-center " style={{border:"0px solid black"}}>
                       <h1 className="w-[110px] text-[15px] font-semibold"> Country : </h1>
                         <div className="flex flex-col">  
                           <input type="text" name="country" value={formData["country"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
@@ -506,7 +515,7 @@ export default function Home() {
                   </div>
 
 
-                  <div className="flex flex-row items-center justify-center">
+                  <div className="flex flex-row items-center justify-center " style={{border:"0px solid black"}}>
                       <h1 className="w-[110px] text-[15px] font-semibold"> Notes : </h1>
                         <div className="flex flex-col">  
                               <input type="text" name="notes" value={formData["notes"] || ""} onChange={handleChange} onBlur={handleBlur} className="focus:ring-[1.5px] w-[200px] focus:ring-blue-400 rounded-md focus:outline-none" style={{border:"0.5px solid black"}}/>
@@ -518,7 +527,7 @@ export default function Home() {
                   </div>
 
 
-                  <button type="submit" className="mt-[12px] w-[200px] h-[30px] text-[15px] font-semibold rounded-lg bg-black text-white hover:bg-slate-600 active:bg-slate-800"
+                  <button type="submit" className="mt-[10px] w-[200px] h-[30px] text-[15px] font-semibold rounded-lg bg-black text-white hover:bg-slate-600 active:bg-slate-800"
                   > Submit </button>
 
               </form>
