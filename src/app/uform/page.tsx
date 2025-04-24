@@ -234,7 +234,7 @@ const page = () => {
 </div>
 
 
-                  <div className="mt-[30px] w-[250px] h-[40px]" style={{border:"1px solid black"}}>
+                  <div className="mt-[30px] w-[250px] h-[40px]" style={{border:"0px solid black"}}>
                         <Link href={"/"}>
                             <button className="w-full h-full bg-black text-white text-[20px] rounded-xl cursor-pointer font-semibold hover:bg-white hover:text-black hover:border-2 hover:border-black active:bg-gray-300" 
                             style={{border:"1px solid black"}} > Go to Normal form </button>
