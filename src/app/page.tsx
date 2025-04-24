@@ -1,8 +1,14 @@
 "use client";
+import { TableHeadTypeMap } from "@mui/material";
+import { count, table } from "console";
 import Link from "next/link";
 
 import React from "react";
 import { useEffect, useState } from "react";
+
+type tableDataType = {
+  [key : string] : string;
+}
 
 
 export default function Home() {
@@ -23,8 +29,15 @@ export default function Home() {
 
   type formDataType = {[key : string] : string};        // type specification
   
-  const [page, setPage] = useState(1);           // for pagination
+  const [page, setPage] = useState(1);           // for pagination📌
   const rowsPerPage = 5;                        // for pagination
+
+  const [searchQuery, setSearchQuery] = useState("");                   // for filteration📌
+  const [filterData, setFilterData] = useState<tableDataType[]>([]);    // for filteration
+
+  const [cityFilter, setCityFilter] = useState("");           // for dropdown filters📌
+  const [stateFilter, setStateFilter] = useState("");         // for dropdown filters
+  const [countryFilter, setCountryFilter] = useState("");     // for dropdown filters
 
 
   // Proper field error message : ======================📌
@@ -42,6 +55,29 @@ export default function Home() {
       notes : "Notes is required."
 
   }
+
+    // COMBINING ALL SEARCH FILTERS =============================== : 📌📌 
+
+  useEffect(() => {
+    
+        const lowerQuery = searchQuery.toLowerCase();    // for case-sensitive search
+
+        const filtered : any = tableData.filter((entry)=>{
+              const matchesSearch = Object.values(entry).some((value)=> 
+                value.toString().toLowerCase().includes(lowerQuery)
+              );
+
+              const matchesCity = cityFilter ? entry.city === cityFilter : true;
+              const matchesState = stateFilter ? entry.state === stateFilter : true;
+              const matchesCountry = countryFilter ? entry.country === countryFilter : true;
+
+              return matchesSearch && matchesCity && matchesState && matchesCountry;
+        });
+
+
+        setFilterData(filtered);  
+  }, [searchQuery, cityFilter, stateFilter, countryFilter, tableData])
+  
 
 
 
@@ -259,17 +295,61 @@ export default function Home() {
 
   return (
     <>
-       
           <div className="form flex flex-col items-center justify-center py-8 px-4" style={{border:"0px solid black"}}> 
 
-                <div className="mt-[50px] w-full flex flex-row items-center justify-center space-x-[850px] max-w-[1100px] mb-4" style={{border:"0px solid black"}}>
+                <div className="mt-[50px] w-full flex flex-row items-center justify-center space-x-[850px] max-w-[1100px] mb-[30px]" style={{border:"0px solid black"}}>
 
                   <h1 className="font-semibold underline underline-offset-4 text-2xl"> User Details  </h1>
+                  </div>
 
-                  <button className="w-[90px] h-[25px] bg-black text-white font-semibold text-sm hover:rounded-lg hover:cursor-pointer hover:bg-slate-700 transition-all delay-100"
-                    onClick={()=> setShowModal(true)}> &#x2b; Add Data </button>
+
+                {/* SEARCH BAR & DROPDOWN FILTERS : =============================== */}
+            <div className="flex flex-row items-center justify-center">
+
+                <div className="mb-[15px] flex items-center justify-start h-[35px] w-[300px] rounded-md" style={{border:"1px solid black"}}>
+
+                  <input type="text" placeholder=" Search by any fields.." value={searchQuery} onChange={(e)=> setSearchQuery(e.target.value)}
+                    className="border border-gray-400 rounded-md w-full h-full focus:ring-[1.5px] focus:ring-blue-400 focus:outline-none"/>
 
                 </div>
+
+
+                <div className="flex flex-wrap items-center justify-center w-[390px] h-[35px] ml-[70px] mb-[15px] space-x-3" 
+                    style={{border:"0px solid black"}}>
+
+                    <select onChange={(e)=> setCityFilter(e.target.value)} className="border-[1.5px] border-gray-400 p-1 rounded focus:ring-[1.5px] focus:ring-blue-500 focus:outline-none">
+
+                      <option value=""> All Cities </option>
+                        {[...new Set(tableData.map(d => d.city))].map(city => (
+                              <option key={city} value={city}>{city}</option>
+                        ))}
+                    </select>
+
+                    <select onChange={(e)=> setStateFilter(e.target.value)} className="border-[1.5px] border-gray-400 p-1 rounded focus:ring-[1.5px] focus:ring-blue-500 focus:outline-none">
+
+                        <option value=""> All States </option>
+                          {[...new Set(tableData.map(d => d.state))].map(state => (
+                                <option key={state} value={state}>{state}</option>
+                          ))}
+                    </select>
+
+                    <select onChange={(e)=> setCountryFilter(e.target.value)} className="border-[1.5px] border-gray-400 p-1 rounded focus:ring-[1.5px] focus:ring-blue-500 focus:outline-none">
+
+                        <option value=""> All Countries </option>
+                          {[...new Set(tableData.map(d => d.country))].map(country => (
+                                <option key={country} value={country}>{country}</option>
+                          ))}
+                    </select>
+
+                </div>
+
+                <div className="mb-[16px] ml-[50px]" style={{border:"1px solid black"}}>
+                    <button className="w-[90px] h-[25px] bg-black text-white font-semibold text-sm hover:rounded-lg hover:cursor-pointer hover:bg-slate-700 transition-all delay-100"
+                        onClick={()=> setShowModal(true)}> &#x2b; Add Data </button>
+                </div>
+
+            </div>
+
 
 
                   {/* CUTSTOM TABLE :  */}
@@ -297,13 +377,13 @@ export default function Home() {
                       <tbody>
 
                         {
-                          tableData.length === 0 ? (
+                          filterData.length === 0 ? (
                               <tr className="" style={{border:"1.5px solid black"}}>
                                   <td colSpan={11} className="font-semibold text-lg text-center" style={{border:"0px solid red"}}> No data found </td>
                               </tr>
                           ) : (
 
-                            tableData .slice((page - 1) * rowsPerPage, page * rowsPerPage)       // it will show 5-5 data for each page
+                            filterData.slice((page - 1) * rowsPerPage, page * rowsPerPage)       // it will show 5-5 data for each page
                             .map((data, index)=> (
 
                               <tr key={index} style={{border:"1.5px solid black"}}> 
@@ -331,7 +411,7 @@ export default function Home() {
                       </tbody>          
                     </table> 
 
-                    <div className="mt-[8px] w-full flex items-center justify-center space-x-[440px]" style={{border:"0px solid black"}}>
+                    <div className="mt-[15px] w-full flex items-center justify-center space-x-[441.2px] bg-gray-200" style={{border:"0px solid black"}}>
                           <button className="text-[13px] w-[90px] h-[26px] rounded-md font-semibold bg-black text-white hover:cursor-pointer hover:bg-gray-700" 
                             onClick={()=> setPage((prev)=> Math.max(prev - 1, 1))}> &#x2190; Previous </button>
 

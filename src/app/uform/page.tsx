@@ -218,7 +218,7 @@ const page = () => {
       </tbody>          
     </table> 
 
-        <div className="mt-[8px] w-full flex items-center justify-center space-x-[445px]" style={{border:"0px solid black"}}>
+        <div className="mt-[8px] w-full flex items-center justify-center space-x-[446.2px] bg-gray-200" style={{border:"0px solid black"}}>
 
                     <button className="text-[13px] w-[80px] h-[26px] rounded-md font-semibold bg-black text-white hover:cursor-pointer hover:bg-gray-700" 
                         onClick={()=> setPage((prev)=> Math.max(prev - 1, 1))}> &#x2190; Previous </button>
