@@ -331,8 +331,8 @@ export default function Home() {
                       </tbody>          
                     </table> 
 
-                    <div className="mt-[8px] w-full flex items-center justify-center space-x-[445px]" style={{border:"0px solid black"}}>
-                          <button className="text-[13px] w-[80px] h-[26px] rounded-md font-semibold bg-black text-white hover:cursor-pointer hover:bg-gray-700" 
+                    <div className="mt-[8px] w-full flex items-center justify-center space-x-[440px]" style={{border:"0px solid black"}}>
+                          <button className="text-[13px] w-[90px] h-[26px] rounded-md font-semibold bg-black text-white hover:cursor-pointer hover:bg-gray-700" 
                             onClick={()=> setPage((prev)=> Math.max(prev - 1, 1))}> &#x2190; Previous </button>
 
                           <span className="text-sm font-semibold"> Page {page} </span>
@@ -347,7 +347,8 @@ export default function Home() {
 
 
                     <Link href={"/uform"}>
-                    <button className="mt-[50px] w-[300px] h-[40px] bg-black text-white text-[20px] rounded-md cursor-pointer font-semibold"> go to formik form </button>
+                    <button className="mt-[70px] w-[250px] h-[40px] bg-black text-white text-[20px] rounded-xl cursor-pointer font-semibold hover:bg-white hover:text-black hover:border-2 hover:border-black active:bg-gray-300" 
+                      > Go to Formik form </button>
                     </Link>
 
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Formik, Form, ErrorMessage, Field, yupToFormErrors } from 'formik';
 import * as Yup from 'yup';
@@ -232,6 +233,11 @@ const page = () => {
 
 </div>
 
+
+                  <Link href={"/"}>
+                      <button className="mt-[70px] w-[250px] h-[40px] bg-black text-white text-[20px] rounded-xl cursor-pointer font-semibold hover:bg-white hover:text-black hover:border-2 hover:border-black active:bg-gray-300" 
+                        > Go to Normal form </button>
+                    </Link>
 
 
 
