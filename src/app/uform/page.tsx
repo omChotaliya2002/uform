@@ -218,7 +218,7 @@ const page = () => {
       </tbody>          
     </table> 
 
-        <div className="mt-[8px] w-full flex items-center justify-center space-x-[446.2px] bg-gray-200" style={{border:"0px solid black"}}>
+        <div className="mt-[15px] w-full flex items-center justify-center space-x-[446.2px] bg-gray-200" style={{border:"0px solid black"}}>
 
                     <button className="text-[13px] w-[80px] h-[26px] rounded-md font-semibold bg-black text-white hover:cursor-pointer hover:bg-gray-700" 
                         onClick={()=> setPage((prev)=> Math.max(prev - 1, 1))}> &#x2190; Previous </button>
@@ -234,10 +234,12 @@ const page = () => {
 </div>
 
 
-                  <Link href={"/"}>
-                      <button className="mt-[70px] w-[250px] h-[40px] bg-black text-white text-[20px] rounded-xl cursor-pointer font-semibold hover:bg-white hover:text-black hover:border-2 hover:border-black active:bg-gray-300" 
-                        > Go to Normal form </button>
-                    </Link>
+                  <div className="mt-[30px] w-[250px] h-[40px]" style={{border:"1px solid black"}}>
+                        <Link href={"/"}>
+                            <button className="w-full h-full bg-black text-white text-[20px] rounded-xl cursor-pointer font-semibold hover:bg-white hover:text-black hover:border-2 hover:border-black active:bg-gray-300" 
+                            style={{border:"1px solid black"}} > Go to Normal form </button>
+                        </Link>
+                    </div>
 
 
 
