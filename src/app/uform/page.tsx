@@ -6,7 +6,9 @@ import { useState, useEffect } from 'react';
 import { Formik, Form, ErrorMessage, Field, yupToFormErrors } from 'formik';
 import * as Yup from 'yup';
 
-
+type tableDataType = {
+  [key : string] : string;
+}
 
 
 const page = () => {
@@ -26,6 +28,13 @@ const page = () => {
 
        const [page, setPage] = useState(1);           // for pagination
         const rowsPerPage = 5;                        // for pagination
+
+        const [searchQuery, setSearchQuery] = useState("");                   // for filteration📌
+        const [filterData, setFilterData] = useState<tableDataType[]>([]);    // for filteration
+
+        const [cityFilter, setCityFilter] = useState("");           // for dropdown filters📌
+        const [stateFilter, setStateFilter] = useState("");         // for dropdown filters
+        const [countryFilter, setCountryFilter] = useState("");     // for dropdown filters
     
     
       // initial table data : ==============👍
@@ -34,6 +43,30 @@ const page = () => {
                name : "", email : "", phone : "", address : "", city : "", state : "", 
                zip : "" ,country : "", notes : "",
         }
+
+
+        useEffect(() => {
+            
+            const lowerQuery = searchQuery.toLowerCase();
+
+            const filtered : any = tableData.filter((entry)=> {
+
+                const matchesSearch = Object.values(entry).some((value)=>
+                  value.toString().toLowerCase().includes(lowerQuery)
+                );
+
+                  const matchesCity = cityFilter ? entry.city === cityFilter : true;
+                  const matchesState = stateFilter ? entry.state === stateFilter : true;
+                  const matchesCountry = countryFilter ? entry.country === countryFilter : true;
+
+                  return matchesSearch && matchesCity && matchesState && matchesCountry;
+            });
+
+            setFilterData(filtered);
+
+        }, [searchQuery, cityFilter, stateFilter, countryFilter, tableData]);
+        
+
 
         // Saved table data : ==============👍
         
@@ -101,21 +134,21 @@ const page = () => {
     
     
     
-      const handleEdit = (index : number) => {
+      const handleEdit = (realIndex : number) => {
     
         setShowEditModal(true);
     
-            const selectedData = tableData[index];
+            const selectedData = tableData[realIndex];
             setFormData(selectedData);
-            setEditIndex(index);
+            setEditIndex(realIndex);
       };
     
     
-      const handleDelete  = (indexToDelete : number) => {
+      const handleDelete  = (realIndex : number) => {
     
         setShowDelModal(true);
     
-            const updateData = tableData.filter((_, index)=> index !== indexToDelete);
+            const updateData = tableData.filter((_, index)=> index !== realIndex);
             setTableData(updateData);
             localStorage.setItem("userData2", JSON.stringify(updateData));
       };
@@ -144,79 +177,130 @@ const page = () => {
 
 
   return (
-<>
-<div className="form flex flex-col items-center justify-center py-8 px-4" style={{border:"0px solid black"}}> 
+    <>
+        <div className="form flex flex-col items-center justify-center py-8 px-4" style={{border:"0px solid black"}}> 
 
-  <h1 className='font-semibold underline underline-offset-4 text-2xl'> Formik Form </h1>
+          <h1 className='mt-[-10px] mb-[10px] font-semibold underline underline-offset-4 text-2xl'> Formik Form </h1>
 
-<div className="mt-[50px] w-full flex flex-row items-center justify-center space-x-[850px] max-w-[1100px] mb-4" style={{border:"0px solid black"}}>
+        <div className="mt-[20px] w-full flex flex-row items-center justify-center space-x-[850px] max-w-[1100px] mb-[30px]" style={{border:"0px solid black"}}>
 
-  <h1 className="font-semibold underline underline-offset-4 text-2xl"> User Details  </h1>
+          <h1 className="font-semibold underline underline-offset-4 text-2xl"> User Details  </h1>
 
-  <button className="w-[90px] h-[25px] bg-black text-white font-semibold text-sm hover:rounded-lg hover:cursor-pointer hover:bg-slate-700 transition-all delay-100"
-    onClick={()=> setShowModal(true)}> &#x2b; Add Data </button>
-
-</div>
+        </div>
 
 
-  {/* CUTSTOM TABLE :  */}
-<div className="datatable flex flex-col w-full max-w-[1100px] p-2 overflow-y-auto items-center justify-center" style={{border:"0px solid blue"}}>
+             {/* SEARCHBAR AND & DROPDOWN FILTERS : ======================= */}
 
-    <table className="table-auto w-full text-center border-collapse" style={{border:"0px solid red"}}>
+                <div className="flex flex-row items-center justify-center w-full max-w-[1080px] mb-[10px]"> 
 
-      <thead className="sticky top-0 bg-amber-200" style={{border:"1.5px solid black"}}>
+                      <div className="mb-[15px] ml-[-10px] flex items-center justify-start h-[35px] w-[300px] rounded-md" style={{border:"1px solid black"}}>
 
-        <tr className="" style={{border:"0px solid red"}}>
-            <th className="border-[1.5px] p-[2px] w-[40px] border-black"> ID </th>
-            <th className="border-[1.5px] p-[2px] w-[150px] border-black"> Name </th>
-            <th className="border-[1.5px] p-[2px] w-[190px] border-black"> Email </th>
-            <th className="border-[1.5px] p-[2px] border-black"> Phone </th>
-            <th className="border-[1.5px] p-[2px] w-[200px] border-black"> Address </th>
-            <th className="border-[1.5px] p-[2px] border-black"> City </th>
-            <th className="border-[1.5px] p-[2px] w-[60px] border-black"> State </th>
-            <th className="border-[1.5px] p-[2px] border-black"> Zip </th>
-            <th className="border-[1.5px] p-[2px] w-[70px] border-black"> Country </th>
-            <th className="border-[1.5px] p-[2px] w-[100px] border-black"> Notes </th>
-            <th className="border-[1.5px] p-[2px] w-[110px] border-black"> Actions </th>
-        </tr>
-      </thead>
+                        <input type="text" placeholder=" Search by any fields.." value={searchQuery} onChange={(e)=> setSearchQuery(e.target.value)}
+                          className="border border-gray-400 rounded-md w-full h-full focus:ring-[1.5px] focus:ring-blue-400 focus:outline-none"/>
 
-      <tbody>
+                      </div>
 
-        {
-          tableData.length === 0 ? (
-              <tr className="" style={{border:"1.5px solid black"}}>
-                  <td colSpan={11} className="font-semibold text-lg text-center" style={{border:"0px solid red"}}> No data found </td>
-              </tr>
-          ) : (
 
-            tableData.slice((page - 1) * rowsPerPage, page * rowsPerPage)
-            .map((data, index)=> (
+                    <div className="flex flex-wrap items-center justify-center w-[450px] h-[35px] ml-[70px] mb-[15px] space-x-3" 
+                        style={{border:"0px solid black"}}>
 
-              <tr key={index} style={{border:"1.5px solid black"}}> 
+                        <select onChange={(e)=> setCityFilter(e.target.value)} className="border-[1.5px] border-gray-400 p-1 rounded focus:ring-[1.5px] focus:ring-blue-500 focus:outline-none">
 
-                  <td className="text-[12px] font-semibold" style={{border:"0px solid black"}}> {data.id} </td>
+                            <option value=""> All Cities </option>
+                              {[...new Set(tableData.map(d => d.city))].map(city => (
+                                    <option key={city} value={city}>{city}</option>
+                              ))}
+                        </select>
 
-                  {fields.filter(field => field !== "id").map((field)=> (
+                        <select onChange={(e)=> setStateFilter(e.target.value)} className="border-[1.5px] border-gray-400 p-1 rounded focus:ring-[1.5px] focus:ring-blue-500 focus:outline-none">
 
-                      <td key={field} className="font-semibold px-2 w-[50px] h-[30px] text-[11px]" style={{border:"1.5px solid black"}}> {data[field]} </td>
+                              <option value=""> All States </option>
+                                {[...new Set(tableData.map(d => d.state))].map(state => (
+                                      <option key={state} value={state}>{state}</option>
+                                ))}
+                        </select>
 
-                  ))} 
+                        <select onChange={(e)=> setCountryFilter(e.target.value)} className="border-[1.5px] border-gray-400 p-1 rounded focus:ring-[1.5px] focus:ring-blue-500 focus:outline-none">
 
-                  <td className="space-x-1"> 
-                      <button className="h-[20px] w-[35px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
-                      onClick={()=>handleEdit(index)}> Edit </button> 
-                      <button className="h-[20px] w-[45px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
-                      onClick={()=> {setDeleteIndex(index); setShowDelModal(true);}}> Delete </button> 
-                  </td>
+                              <option value=""> All Countries </option>
+                                {[...new Set(tableData.map(d => d.country))].map(country => (
+                                      <option key={country} value={country}>{country}</option>
+                                ))}
+                        </select>
 
-              </tr>
-            ))
-          )
-        }
+                    </div>
 
-      </tbody>          
-    </table> 
+                        <div className="mb-[16px] ml-[70px]" style={{border:"0px solid black"}}>
+                              <button className="w-[90px] h-[25px] bg-black text-white font-semibold text-sm hover:rounded-lg hover:cursor-pointer hover:bg-slate-700 transition-all delay-100"
+                                  onClick={()=> setShowModal(true)}> &#x2b; Add Data </button>
+                        </div>
+
+                    </div>
+
+
+      {/* CUTSTOM TABLE :  */}
+    <div className="datatable flex flex-col w-full max-w-[1100px] p-2 overflow-y-auto items-center justify-center" style={{border:"0px solid blue"}}>
+
+        <table className="table-auto w-full text-center border-collapse" style={{border:"0px solid red"}}>
+
+          <thead className="sticky top-0 bg-amber-200" style={{border:"1.5px solid black"}}>
+
+            <tr className="" style={{border:"0px solid red"}}>
+                <th className="border-[1.5px] p-[2px] w-[40px] border-black"> ID </th>
+                <th className="border-[1.5px] p-[2px] w-[150px] border-black"> Name </th>
+                <th className="border-[1.5px] p-[2px] w-[190px] border-black"> Email </th>
+                <th className="border-[1.5px] p-[2px] border-black"> Phone </th>
+                <th className="border-[1.5px] p-[2px] w-[200px] border-black"> Address </th>
+                <th className="border-[1.5px] p-[2px] border-black"> City </th>
+                <th className="border-[1.5px] p-[2px] w-[60px] border-black"> State </th>
+                <th className="border-[1.5px] p-[2px] border-black"> Zip </th>
+                <th className="border-[1.5px] p-[2px] w-[70px] border-black"> Country </th>
+                <th className="border-[1.5px] p-[2px] w-[100px] border-black"> Notes </th>
+                <th className="border-[1.5px] p-[2px] w-[110px] border-black"> Actions </th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {
+              tableData.length === 0 ? (
+                  <tr className="" style={{border:"1.5px solid black"}}>
+                      <td colSpan={11} className="font-semibold text-lg text-center" style={{border:"0px solid red"}}> No data found </td>
+                  </tr>
+              ) : (
+
+                tableData.slice((page - 1) * rowsPerPage, page * rowsPerPage)
+                .map((data, index)=> {
+
+                  const realIndex =  (page-1) * rowsPerPage + index;
+                  
+                  
+                  return(
+
+                  <tr key={index} style={{border:"1.5px solid black"}}> 
+
+                      <td className="text-[12px] font-semibold" style={{border:"0px solid black"}}> {data.id} </td>
+
+                      {fields.filter(field => field !== "id").map((field)=> (
+
+                          <td key={field} className="font-semibold px-2 w-[50px] h-[30px] text-[11px]" style={{border:"1.5px solid black"}}> {data[field]} </td>
+
+                      ))} 
+
+                      <td className="space-x-1"> 
+                          <button className="h-[20px] w-[35px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
+                          onClick={()=>handleEdit(realIndex)}> Edit </button> 
+                          <button className="h-[20px] w-[45px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
+                          onClick={()=> {setDeleteIndex(realIndex); setShowDelModal(true);}}> Delete </button> 
+                      </td>
+
+                  </tr>
+                )})
+              )
+            }
+
+          </tbody>          
+        </table> 
 
         <div className="mt-[15px] w-full flex items-center justify-center space-x-[446.2px] bg-gray-200" style={{border:"0px solid black"}}>
 
@@ -244,63 +328,63 @@ const page = () => {
 
 
 
-{
-    showEditModal && (
-  <>
-    <div className="w-full h-full fixed items-center justify-center z-10 top-0" tabIndex={-1}> 
+      {
+          showEditModal && (
+        <>
+          <div className="w-full h-full fixed items-center justify-center z-10 top-0" tabIndex={-1}> 
 
-        <div className="absolute inset-0 bg-black opacity-40 z-10" tabIndex={-2}> </div>
+              <div className="absolute inset-0 bg-black opacity-40 z-10" tabIndex={-2}> </div>
 
-          <div className="relative w-[350px] h-[200px] mx-auto flex flex-col items-center justify-center mt-[30px] rounded-xl bg-white text-black z-30 opacity-100"> 
-            <h1 className="absolute mt-[-145px] text-[24px] font-bold text-[#808080] ml-[-260px]" style={{border:"0px solid black"}}> Edit </h1>
-            <h1 className="absolute text-[18px] mt-[-25px] font-semibold" style={{border:"0px solid black"}}> Do you want to edit this data? </h1>
+                <div className="relative w-[350px] h-[200px] mx-auto flex flex-col items-center justify-center mt-[30px] rounded-xl bg-white text-black z-30 opacity-100"> 
+                  <h1 className="absolute mt-[-145px] text-[24px] font-bold text-[#808080] ml-[-260px]" style={{border:"0px solid black"}}> Edit </h1>
+                  <h1 className="absolute text-[18px] mt-[-25px] font-semibold" style={{border:"0px solid black"}}> Do you want to edit this data? </h1>
 
-            <div className="absolute w-full mt-[140px] h-[50px] flex flex-row items-center justify-center space-x-[170px]" style={{border:"0px solid black"}}> 
-                <button className="w-[75px] h-[35px] bg-white text-black ring-1 ring-black rounded-lg font-semibold cursor-pointer hover:bg-black hover:text-white"
-                onClick={()=>setShowEditModal(false)}> Cancel </button>
+                  <div className="absolute w-full mt-[140px] h-[50px] flex flex-row items-center justify-center space-x-[170px]" style={{border:"0px solid black"}}> 
+                      <button className="w-[75px] h-[35px] bg-white text-black ring-1 ring-black rounded-lg font-semibold cursor-pointer hover:bg-black hover:text-white"
+                      onClick={()=>setShowEditModal(false)}> Cancel </button>
 
-                <button className="w-[75px] h-[35px] bg-white ring-1 ring-black text-black font-semibold rounded-lg cursor-pointer hover:bg-[#4286f4] hover:text-white"
-                onClick={()=> {setShowEditModal(false); setShowModal(true);}}> Edit </button>
-              
-            </div>
+                      <button className="w-[75px] h-[35px] bg-white ring-1 ring-black text-black font-semibold rounded-lg cursor-pointer hover:bg-[#4286f4] hover:text-white"
+                      onClick={()=> {setShowEditModal(false); setShowModal(true);}}> Edit </button>
+                    
+                  </div>
+                </div>
           </div>
-    </div>
-</>  
-  )
-}
+      </>  
+        )
+      }
 
 
 
-  {
-    showDelModal && (
-  <>
-    <div className="w-full h-full fixed items-center justify-center z-10 top-0" tabIndex={-1}> 
+          {
+            showDelModal && (
+          <>
+            <div className="w-full h-full fixed items-center justify-center z-10 top-0" tabIndex={-1}> 
 
-        <div className="absolute inset-0 bg-black opacity-40 z-10" tabIndex={-2}> </div>
+                <div className="absolute inset-0 bg-black opacity-40 z-10" tabIndex={-2}> </div>
 
-          <div className="relative w-[350px] h-[200px] mx-auto flex flex-col items-center justify-center mt-[30px] rounded-xl bg-white text-black z-30 opacity-100"> 
-            <h1 className="absolute mt-[-145px] text-[24px] font-bold text-[#808080] ml-[-260px]" style={{border:"0px solid black"}}> Delete </h1>
-            <h1 className="absolute text-[18px] mt-[-25px] font-semibold" style={{border:"0px solid black"}}> Do you want to delete this data? </h1>
+                  <div className="relative w-[350px] h-[200px] mx-auto flex flex-col items-center justify-center mt-[30px] rounded-xl bg-white text-black z-30 opacity-100"> 
+                    <h1 className="absolute mt-[-145px] text-[24px] font-bold text-[#808080] ml-[-260px]" style={{border:"0px solid black"}}> Delete </h1>
+                    <h1 className="absolute text-[18px] mt-[-25px] font-semibold" style={{border:"0px solid black"}}> Do you want to delete this data? </h1>
 
-            <div className="absolute w-full mt-[140px] h-[50px] flex flex-row items-center justify-center space-x-[170px]" style={{border:"0px solid black"}}> 
-                <button className="w-[75px] h-[35px] bg-white text-black ring-1 ring-black rounded-lg font-semibold cursor-pointer hover:bg-black hover:text-white"
-                onClick={()=>setShowDelModal(false)}> Cancel </button>
+                    <div className="absolute w-full mt-[140px] h-[50px] flex flex-row items-center justify-center space-x-[170px]" style={{border:"0px solid black"}}> 
+                        <button className="w-[75px] h-[35px] bg-white text-black ring-1 ring-black rounded-lg font-semibold cursor-pointer hover:bg-black hover:text-white"
+                        onClick={()=>setShowDelModal(false)}> Cancel </button>
 
-                <button className="w-[75px] h-[35px] bg-white ring-1 ring-black text-black font-semibold rounded-lg cursor-pointer hover:bg-[#FF0000] hover:text-white"
-                onClick={()=>{
-                    if(deleteindex !== null)  { 
-                        handleDelete(deleteindex);
-                        setShowDelModal(false);
-                        setDeleteIndex(null);
-                    }
-                }}> Delete </button>
-              
+                        <button className="w-[75px] h-[35px] bg-white ring-1 ring-black text-black font-semibold rounded-lg cursor-pointer hover:bg-[#FF0000] hover:text-white"
+                        onClick={()=>{
+                            if(deleteindex !== null)  { 
+                                handleDelete(deleteindex);
+                                setShowDelModal(false);
+                                setDeleteIndex(null);
+                            }
+                        }}> Delete </button>
+                      
+                    </div>
+                  </div>
             </div>
-          </div>
-    </div>
-</>  
-  )
-}
+        </>  
+          )
+        }
 
 
 
@@ -419,10 +503,7 @@ const page = () => {
 
 </div>
     
-
 </>
-
-
   )
 }
 

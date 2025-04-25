@@ -1,8 +1,6 @@
 "use client";
-import { TableHeadTypeMap } from "@mui/material";
-import { count, table } from "console";
-import Link from "next/link";
 
+import Link from "next/link";
 import React from "react";
 import { useEffect, useState } from "react";
 
@@ -76,7 +74,7 @@ export default function Home() {
 
 
         setFilterData(filtered);  
-  }, [searchQuery, cityFilter, stateFilter, countryFilter, tableData])
+  }, [searchQuery, cityFilter, stateFilter, countryFilter, tableData]);
   
 
 
@@ -251,22 +249,22 @@ export default function Home() {
 
 
 
-  const handleEdit = (index : number) => {
+  const handleEdit = (realIndex : number) => {
 
     setShowEditModal(true);
 
-        const selectedData = tableData[index];
+        const selectedData = tableData[realIndex];
         setFormData(selectedData);
-        setEditIndex(index);
+        setEditIndex(realIndex);
         // setShowModal(true);
   };
 
 
-  const handleDelete  = (indexToDelete : number) => {
+  const handleDelete  = (realIndex : number) => {
 
     setShowDelModal(true);
 
-        const updateData = tableData.filter((_, index)=> index !== indexToDelete);
+        const updateData = tableData.filter((_, index)=> index !== realIndex);
         setTableData(updateData);
         localStorage.setItem("userData", JSON.stringify(updateData));
   };
@@ -297,16 +295,17 @@ export default function Home() {
     <>
           <div className="form flex flex-col items-center justify-center py-8 px-4" style={{border:"0px solid black"}}> 
 
-                <div className="mt-[50px] w-full flex flex-row items-center justify-center space-x-[850px] max-w-[1100px] mb-[30px]" style={{border:"0px solid black"}}>
+                <div className="mt-[20px] w-full flex flex-row items-center justify-center max-w-fit mb-[30px]" style={{border:"0px solid black"}}>
 
                   <h1 className="font-semibold underline underline-offset-4 text-2xl"> User Details  </h1>
                   </div>
 
 
                 {/* SEARCH BAR & DROPDOWN FILTERS : =============================== */}
-            <div className="flex flex-row items-center justify-center">
 
-                <div className="mb-[15px] flex items-center justify-start h-[35px] w-[300px] rounded-md" style={{border:"1px solid black"}}>
+            <div className="flex flex-row items-center w-full max-w-[1080px] justify-center mb-[10px]" style={{border:"0px solid red"}}>
+
+                <div className="mb-[15px] ml-[-10px] flex items-center justify-start h-[35px] w-[300px] rounded-md" style={{border:"1px solid black"}}>
 
                   <input type="text" placeholder=" Search by any fields.." value={searchQuery} onChange={(e)=> setSearchQuery(e.target.value)}
                     className="border border-gray-400 rounded-md w-full h-full focus:ring-[1.5px] focus:ring-blue-400 focus:outline-none"/>
@@ -314,7 +313,7 @@ export default function Home() {
                 </div>
 
 
-                <div className="flex flex-wrap items-center justify-center w-[390px] h-[35px] ml-[70px] mb-[15px] space-x-3" 
+                <div className="flex flex-wrap items-center justify-center w-[450px] h-[35px] ml-[70px] mb-[15px] space-x-3" 
                     style={{border:"0px solid black"}}>
 
                     <select onChange={(e)=> setCityFilter(e.target.value)} className="border-[1.5px] border-gray-400 p-1 rounded focus:ring-[1.5px] focus:ring-blue-500 focus:outline-none">
@@ -343,7 +342,7 @@ export default function Home() {
 
                 </div>
 
-                <div className="mb-[16px] ml-[50px]" style={{border:"1px solid black"}}>
+                <div className="mb-[16px] ml-[70px]" style={{border:"0px solid black"}}>
                     <button className="w-[90px] h-[25px] bg-black text-white font-semibold text-sm hover:rounded-lg hover:cursor-pointer hover:bg-slate-700 transition-all delay-100"
                         onClick={()=> setShowModal(true)}> &#x2b; Add Data </button>
                 </div>
@@ -384,9 +383,13 @@ export default function Home() {
                           ) : (
 
                             filterData.slice((page - 1) * rowsPerPage, page * rowsPerPage)       // it will show 5-5 data for each page
-                            .map((data, index)=> (
+                            .map((data, index)=> {
+                              const realIndex = (page-1) * rowsPerPage + index;
 
-                              <tr key={index} style={{border:"1.5px solid black"}}> 
+                              
+                              return(
+
+                              <tr key={realIndex} style={{border:"1.5px solid black"}}> 
   
                                   <td className="text-[12px] font-semibold" style={{border:"0px solid black"}}> {data.id} </td>
   
@@ -398,13 +401,13 @@ export default function Home() {
 
                                   <td className="space-x-1"> 
                                       <button className="h-[20px] w-[35px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
-                                      onClick={()=>handleEdit(index)}> Edit </button> 
+                                      onClick={()=>handleEdit(realIndex)}> Edit </button> 
                                       <button className="h-[20px] w-[45px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
-                                      onClick={()=> {setDeleteIndex(index); setShowDelModal(true);}}> Delete </button> 
+                                      onClick={()=> {setDeleteIndex(realIndex); setShowDelModal(true);}}> Delete </button> 
                                   </td>
 
                               </tr>
-                            ))
+                            )})
                           )
                         }
 
