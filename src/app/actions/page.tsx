@@ -1,24 +1,29 @@
-  "use client";
+"use client";
 
-import Link from "next/link";
 import React from "react";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type tableDataType = {
   [key : string] : string;
 }
 
 
-export default function Home() {
+export default function Actions() {
 
   const fields = ["name", "email","phone", "address","city", "state", "zip", "country", "notes"];
   const [formData, setFormData] = useState<{[key : string] : string}>({});  //object where key and values are string👍
   const [tableData, setTableData] = useState<{[key : string] : string}[]>([]);
 
   const [showModal, setShowModal] = useState(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [deleteindex, setDeleteIndex] = useState<number | null>(null);
 
   const [errors, setErrors] = useState<{[key : string] : string}>({});
   const [errorMsg, setErrorMsg] = useState<string>("");
+
+  const [showDelModal, setShowDelModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   type formDataType = {[key : string] : string};        // type specification
   
@@ -243,6 +248,28 @@ export default function Home() {
   };
 
 
+
+  const handleEdit = (realIndex : number) => {
+
+    setShowEditModal(true);
+
+        const selectedData = tableData[realIndex];
+        setFormData(selectedData);
+        setEditIndex(realIndex);
+        // setShowModal(true);
+  };
+
+
+  const handleDelete  = (realIndex : number) => {
+
+    setShowDelModal(true);
+
+        const updateData = tableData.filter((_, index)=> index !== realIndex);
+        setTableData(updateData);
+        localStorage.setItem("userData", JSON.stringify(updateData));
+  };
+
+
   // lock the background when modal is open : 👍
 
   useEffect(() => {
@@ -315,11 +342,6 @@ export default function Home() {
 
                 </div>
 
-                <div className="mb-[16px] ml-[70px]" style={{border:"0px solid black"}}>
-                    <button className="w-[90px] h-[25px] bg-black text-white font-semibold text-sm hover:rounded-lg hover:cursor-pointer hover:bg-slate-700 transition-all delay-100"
-                        onClick={()=> setShowModal(true)}> &#x2b; Add Data </button>
-                </div>
-
             </div>
 
 
@@ -342,6 +364,7 @@ export default function Home() {
                             <th className="border-[1.5px] p-[2px] border-black"> Zip </th>
                             <th className="border-[1.5px] p-[2px] w-[70px] border-black"> Country </th>
                             <th className="border-[1.5px] p-[2px] w-[100px] border-black"> Notes </th>
+                            <th className="border-[1.5px] p-[2px] w-[110px] border-black"> Actions </th>
                         </tr>
                       </thead>
 
@@ -371,6 +394,13 @@ export default function Home() {
   
                                   ))} 
 
+                                  <td className="space-x-1"> 
+                                      <button className="h-[20px] w-[35px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
+                                      onClick={()=>handleEdit(realIndex)}> Edit </button> 
+                                      <button className="h-[20px] w-[45px] bg-black text-white text-[12px] font-semibold rounded-sm hover:bg-slate-600 hover:cursor-pointer"
+                                      onClick={()=> {setDeleteIndex(realIndex); setShowDelModal(true);}}> Delete </button> 
+                                  </td>
+
                               </tr>
                             )})
                           )
@@ -393,12 +423,73 @@ export default function Home() {
                 </div>
 
 
-                    <div className="mt-[30px] w-[250px] h-[40px]" style={{border:"0px solid black"}}>
-                        <Link href={"/actions"}>
+                <div className="mt-[30px] w-[250px] h-[40px]" style={{border:"0px solid black"}}>
+                        <Link href={"/"}>
                         <button className="w-full h-full bg-black text-white text-[20px] rounded-xl cursor-pointer font-semibold hover:bg-white hover:text-black hover:border-2 hover:border-black active:bg-gray-300" 
-                        style={{border:"1px solid black"}} > Edit User data </button>
+                        style={{border:"1px solid black"}} > Add User data </button>
                         </Link>
                     </div>
+
+
+                {
+                    showEditModal && (
+                  <>
+                    <div className="w-full h-full fixed items-center justify-center z-10 top-0" tabIndex={-1}> 
+
+                        <div className="absolute inset-0 bg-black opacity-40 z-10" tabIndex={-2}> </div>
+
+                          <div className="relative w-[350px] h-[200px] mx-auto flex flex-col items-center justify-center mt-[30px] rounded-xl bg-white text-black z-30 opacity-100"> 
+                            <h1 className="absolute mt-[-145px] text-[24px] font-bold text-[#808080] ml-[-260px]" style={{border:"0px solid black"}}> Edit </h1>
+                            <h1 className="absolute text-[18px] mt-[-25px] font-semibold" style={{border:"0px solid black"}}> Do you want to edit this data? </h1>
+
+                            <div className="absolute w-full mt-[140px] h-[50px] flex flex-row items-center justify-center space-x-[170px]" style={{border:"0px solid black"}}> 
+                                <button className="w-[75px] h-[35px] bg-white text-black ring-1 ring-black rounded-lg font-semibold cursor-pointer hover:bg-black hover:text-white"
+                                onClick={()=>setShowEditModal(false)}> Cancel </button>
+
+                                <button className="w-[75px] h-[35px] bg-white ring-1 ring-black text-black font-semibold rounded-lg cursor-pointer hover:bg-[#4286f4] hover:text-white"
+                                onClick={()=> {setShowEditModal(false); setShowModal(true);}}> Edit </button>
+                              
+                            </div>
+                          </div>
+                    </div>
+                </>  
+                  )
+                }
+
+
+
+                  {
+                    showDelModal && (
+                  <>
+                    <div className="w-full h-full fixed items-center justify-center z-10 top-0" tabIndex={-1}> 
+
+                        <div className="absolute inset-0 bg-black opacity-40 z-10" tabIndex={-2}> </div>
+
+                          <div className="relative w-[350px] h-[200px] mx-auto flex flex-col items-center justify-center mt-[30px] rounded-xl bg-white text-black z-30 opacity-100"> 
+                            <h1 className="absolute mt-[-145px] text-[24px] font-bold text-[#808080] ml-[-260px]" style={{border:"0px solid black"}}> Delete </h1>
+                            <h1 className="absolute text-[18px] mt-[-25px] font-semibold" style={{border:"0px solid black"}}> Do you want to delete this data? </h1>
+
+                            <div className="absolute w-full mt-[140px] h-[50px] flex flex-row items-center justify-center space-x-[170px]" style={{border:"0px solid black"}}> 
+                                <button className="w-[75px] h-[35px] bg-white text-black ring-1 ring-black rounded-lg font-semibold cursor-pointer hover:bg-black hover:text-white"
+                                onClick={()=>setShowDelModal(false)}> Cancel </button>
+
+                                <button className="w-[75px] h-[35px] bg-white ring-1 ring-black text-black font-semibold rounded-lg cursor-pointer hover:bg-[#FF0000] hover:text-white"
+                                onClick={()=>{
+                                    if(deleteindex !== null)  { 
+                                        handleDelete(deleteindex);
+                                        setShowDelModal(false);
+                                        setDeleteIndex(null);
+                                    }
+                                }}> Delete </button>
+                              
+                            </div>
+                          </div>
+                    </div>
+                </>  
+                  )
+                }
+
+
               
 
               {
