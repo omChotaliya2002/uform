@@ -316,7 +316,7 @@ export default function Home() {
                 </div>
 
                 <div className="mb-[16px] ml-[70px]" style={{border:"0px solid black"}}>
-                    <button className="w-[90px] h-[25px] bg-black text-white font-semibold text-sm hover:rounded-lg hover:cursor-pointer hover:bg-slate-700 transition-all delay-100"
+                    <button className="w-[100px] h-[30px] bg-black text-white font-semibold text-sm ring-2 ring-black rounded-lg hover:cursor-pointer hover:bg-white hover:text-black hover:font-semibold transition-all delay-150"
                         onClick={()=> setShowModal(true)}> &#x2b; Add Data </button>
                 </div>
 

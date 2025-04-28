@@ -305,7 +305,7 @@ export default function Actions() {
 
             <div className="flex flex-row items-center w-full max-w-[1080px] justify-center mb-[10px]" style={{border:"0px solid red"}}>
 
-                <div className="mb-[15px] ml-[-10px] flex items-center justify-start h-[35px] w-[300px] rounded-md" style={{border:"1px solid black"}}>
+                <div className="mb-[15px] ml-[100px] flex items-center justify-start h-[35px] w-[300px] rounded-md" style={{border:"1px solid black"}}>
 
                   <input type="text" placeholder=" Search by any fields.." value={searchQuery} onChange={(e)=> setSearchQuery(e.target.value)}
                     className="border border-gray-400 rounded-md w-full h-full focus:ring-[1.5px] focus:ring-blue-400 focus:outline-none"/>
@@ -313,7 +313,7 @@ export default function Actions() {
                 </div>
 
 
-                <div className="flex flex-wrap items-center justify-center w-[450px] h-[35px] ml-[70px] mb-[15px] space-x-3" 
+                <div className="flex flex-wrap items-center justify-center w-[450px] h-[35px] ml-[120px] mb-[15px] space-x-3" 
                     style={{border:"0px solid black"}}>
 
                     <select onChange={(e)=> setCityFilter(e.target.value)} className="border-[1.5px] border-gray-400 p-1 rounded focus:ring-[1.5px] focus:ring-blue-500 focus:outline-none">
