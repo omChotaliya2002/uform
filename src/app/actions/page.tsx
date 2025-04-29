@@ -217,8 +217,6 @@ export default function Actions() {
 
 
 
-      // const isEmail = 
-
       let updateData : any[] = [];
 
       if(formData.id){
