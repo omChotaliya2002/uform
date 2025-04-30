@@ -3,8 +3,6 @@
   import React from "react";
   import { useEffect, useState } from "react";
   import Image from "next/image";
-  import editLogo from "/Task-1/uform/public/actions/edit.svg";
-  import delLogo from "/Task-1/uform/public/actions/delete.svg";
   import { useRouter } from "next/navigation";
 
 
@@ -416,12 +414,12 @@ export default function Home() {
                                     <td className="space-x-5 flex items-center justify-center"> 
                                       <button className="h-[25px] w-[25px] bg-white text-black text-[12px] font-semibold rounded-sm hover:cursor-pointer"
                                         onClick={()=> {setShowEditModal(true); setEditIndex(realIndex)}}    style={{border:"0px solid redq"}}> 
-                                          <Image src={editLogo} alt="edit" height={25} width={25} className="hover:scale-125"/>
+                                          <Image src={"/actions/edit.svg"} alt="edit" height={25} width={25} className="hover:scale-125"/>
                                        </button> 
 
                                       <button className="h-[23px] w-[23px] bg-white text-white text-[12px] font-semibold rounded-sm hover:cursor-pointer"
                                       onClick={()=> {setDeleteIndex(realIndex); setShowDelModal(true);}} style={{border : "0px solid black"}}>
-                                         <Image src={delLogo} alt="delete" height={17} width={17} className="mt-[2px] ml-[2px] hover:scale-125"/> 
+                                         <Image src={"/actions/delete.svg"} alt="delete" height={17} width={17} className="mt-[2px] ml-[2px] hover:scale-125"/> 
                                       </button> 
                                   </td>
 
