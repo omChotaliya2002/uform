@@ -152,14 +152,27 @@ export default function Home() {
 
   useEffect(() => {
     
-      const initialData : formDataType = {};
-      fields.forEach(field => initialData[field] = "");
+      // const initialData : formDataType = {};
+      const initialData = {} as formDataType;
+      fields.forEach(field => {
+        initialData[field] = ""
+      });
       setFormData(initialData);
 
-      const storedData : formDataType[] = JSON.parse(localStorage.getItem("userData") || "[]");  //if "getitem" returns null it falls back to an empty string array👍
-      setTableData(storedData);
+      // const storedData : formDataType[] = JSON.parse(localStorage.getItem("userData") || "[]");  //if "getitem" returns null it falls back to an empty string array👍
+      // setTableData(storedData);
 
+      let storedData : formDataType[] = [];
+      try{
+        storedData = JSON.parse(localStorage.getItem("userData") || "[]");
+        setTableData(storedData);
+      }
+      catch(err) {
+          console.error("❌❌ Error parsing userData from localstorage", err);
+          setTableData([]);
+      }
 
+      // setTableData(storedData);
   }, []);
 
 
