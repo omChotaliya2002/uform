@@ -178,7 +178,7 @@ return(
             <div className="absolute mt-[-460px] ml-[400px] w-[30px] h-[30px]" style={{border:"0px solid red"}}> 
 
                 <button className="text-center w-full h-full bg-white text-black font-extrabold text-[18px] hover:cursor-pointer hover:scale-125"
-                onClick={()=> {setShowForm(false); router.push("/")}}> &#x2716; </button>
+                onClick={()=> {setShowForm(false); router.push("/uform2")}}> &#x2716; </button>
 
             </div>
 
