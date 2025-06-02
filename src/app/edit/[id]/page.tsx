@@ -128,7 +128,7 @@ export default function EditUserData() {
         const storedData : any[] = JSON.parse(localStorage.getItem('userData') || '[]');
         const updateData = storedData.map(user => user.id === id ? {...user, ...formData} : user);
         localStorage.setItem('userData', JSON.stringify(updateData));
-        router.push("/");
+        router.push("/uform2");
     }
 
     const handleChange = (e : React.ChangeEvent<HTMLInputElement>) => {

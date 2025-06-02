@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "name": "om",
+    "password": "omdev@"
+  },
+  {
+    "name": "dev",
+    "password": "dev2005"
+  },
+  {
+    "name": "Mark",
+    "password": "mark@12"
+  },
+  {
+    "name": "Madhav",
+    "password": "Madhav@34"
+  },
+  {
+    "name": "geeta",
+    "password": "Geeta@9090"
+  },
+  {
+    "name": "chetna",
+    "password": "chetna@7676"
+  },
+  {
+    "name": "Bhavin",
+    "password": "Bhavin@1776"
+  },
+  {
+    "name": "user1",
+    "password": "User@100"
+  },
+  {
+    "name": "Admin",
+    "password": "Admin007"
+  },
+  {
+    "name": "Vishal",
+    "password": "vishal@99"
+  }
+]

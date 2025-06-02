@@ -4,20 +4,26 @@ import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField  from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
-import { Stack } from "@mui/material";
+import { IconButton, InputAdornment, Stack } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 
 const page = () => {
 
-
     const [success, setSuccess] = useState("");
+    const [error, setError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfPassword, setShowConfPassword] = useState(false);
 
     const router = useRouter();
 
+    // SHOW / HIDE PASSWORD : 📌
+      const togglePassword = () => setShowPassword((prev)=> !prev);
+      const toggleConfPassword = () => setShowConfPassword((prev)=> !prev);
 
     const validationSchema = Yup.object({
        name : Yup.string().min(2,"Name must be atleast 2 characters.").required("*Name is required"),
@@ -37,72 +43,37 @@ const page = () => {
             confpassword : "",
         },
         validationSchema,
-        onSubmit : (values, {resetForm}) => {
+        onSubmit : async (values, {resetForm}) => {
             
-            let users = [];
-
-            const storedData = localStorage.getItem("userCred");
-
-            if(storedData){
             try{
-                users = JSON.parse(storedData);
+                const res = await fetch("/api/register", {
+                    method : "POST",
+                    headers : {"Content-Type" : "application/json"},
+                    body : JSON.stringify(values),
+                });
 
-                if(!Array.isArray(users)) throw new Error("Invalid format");
-            }
-            catch(err){
-                console.error("Currupted user data in localstorage");
-                users = [];            
-            }
-        }
+                const data = await res.json();
 
-            const userNameExists = users.some(
-                (user)=> user.name.toLowerCase() === values.name.toLowerCase()
-            );
-
-            const userEmailExists = users.some(
-                (user)=> user.email.toLowerCase() === values.email.toLowerCase()
-            );
-
-            
-            if(userNameExists && userEmailExists){
-                alert("Both username and email already exists");
-                return;
+                if(res.ok && data.success){
+                    setSuccess("Registration Successfull");
+                    setError("");
+                    resetForm();
+                    
+                    setTimeout(() => router.push('/login'), 1500);
+                }
+                else{
+                    setSuccess("");
+                    setError(data.messsage || "Registration failed");
+                }
             }
-            else if(userNameExists){
-                alert("Username already exists");
-                return;
+            catch{
+                setError("Server error");
             }
-            else if(userEmailExists){
-                alert("Email already exists");
-                return;
-            }
-
-            users.push(values);
-            localStorage.setItem("userCred", JSON.stringify(users));
-            setSuccess("Registration Successfull");
-            resetForm();
         },
 
         validateOnChange : true,
         validateOnBlur : true,
     });
-
-
-    useEffect(() => {
-          
-            if(success){
-
-                const timer = setTimeout(() => {
-                    setSuccess("");
-                    router.push("/login");
-                },2000);
-
-                return()=> {
-                    clearTimeout(timer);
-                }
-            }
-        
-        }, [success]);
 
 
 return (
@@ -114,6 +85,17 @@ return (
                     <Alert severity="success">
                         <AlertTitle> Success </AlertTitle>
                           {success}
+                    </Alert>
+                </Stack>
+
+                )}
+
+    {error && (
+
+                <Stack spacing={2} sx={{width : "100%"}}>
+                    <Alert severity="error">
+                        <AlertTitle> Error </AlertTitle>
+                          {error}
                     </Alert>
                 </Stack>
 
@@ -142,15 +124,39 @@ return (
                 sx={{width : "60%"}}/>
 
 
-            <TextField name="password" label="password" type="password" size="small" value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur}
+            <TextField name="password" label="password" type={showPassword ? "text" : "password"} size="small" value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur}
                 error={formik.touched.password && Boolean(formik.errors.password)}
                 helperText = {formik.touched.password && formik.errors.password}
+                InputProps={{
+                        endAdornment : (
+                            <InputAdornment position="end">
+
+                                <IconButton onClick={togglePassword} edge="end" size="small"> 
+
+                                    {showPassword ? <VisibilityOff/> : <Visibility/>}
+
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                }}
                 sx={{width : "60%"}} />
 
 
-            <TextField name="confpassword" label="Confirm password" type="password" size="small" value={formik.values.confpassword} onChange={formik.handleChange} onBlur={formik.handleBlur}
+            <TextField name="confpassword" label="Confirm password" type={showConfPassword ? "text" : "password"} size="small" value={formik.values.confpassword} onChange={formik.handleChange} onBlur={formik.handleBlur}
                 error={formik.touched.confpassword && Boolean(formik.errors.confpassword)} 
                 helperText = {formik.touched.confpassword && formik.errors.confpassword}
+                InputProps={{
+                        endAdornment : (
+                            <InputAdornment position="end">
+
+                                <IconButton onClick={toggleConfPassword} edge="end" size="small"> 
+
+                                    {showConfPassword ? <VisibilityOff/> : <Visibility/>}
+
+                                </IconButton>
+                            </InputAdornment>
+                        )
+                }}
                 sx={{width : "60%"}}/>
 
 
@@ -169,3 +175,49 @@ export default page;
 //NOTES TO REMEMBER REGARDING THIS CODE :  📌📌📌
 
 // Formik only marks a field as touched when it’s blurred (i.e., user clicks out of it), and your Yup validation only shows errors for touched fields.
+
+
+
+
+// let users = [];
+
+//             const storedData = localStorage.getItem("userCred");
+
+//             if(storedData){
+//             try{
+//                 users = JSON.parse(storedData);
+
+//                 if(!Array.isArray(users)) throw new Error("Invalid format");
+//             }
+//             catch(err){
+//                 console.error("Currupted user data in localstorage");
+//                 users = [];            
+//             }
+//         }
+
+//             const userNameExists = users.some(
+//                 (user)=> user.name.toLowerCase() === values.name.toLowerCase()
+//             );
+
+//             const userEmailExists = users.some(
+//                 (user)=> user.email.toLowerCase() === values.email.toLowerCase()
+//             );
+
+            
+//             if(userNameExists && userEmailExists){
+//                 alert("Both username and email already exists");
+//                 return;
+//             }
+//             else if(userNameExists){
+//                 alert("Username already exists");
+//                 return;
+//             }
+//             else if(userEmailExists){
+//                 alert("Email already exists");
+//                 return;
+//             }
+
+//             users.push(values);
+//             localStorage.setItem("userCred", JSON.stringify(users));
+//             setSuccess("Registration Successfull");
+//             resetForm();

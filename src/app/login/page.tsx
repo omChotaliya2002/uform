@@ -30,27 +30,31 @@ export default function Page() {
       const togglePassword = () => setShowPassword((prev)=> !prev);
 
 
-      // FOR LOGIN FUNCTIONLITY : 📌
-      const handleLogin = (values : {name : string; password : string}) => {
+    const handleLogin = async (values : {name : string, password : string}) : Promise<boolean> => {
 
-            if(typeof window === "undefined") return false;
+        try{
+            const res = await fetch('/api/login', {
+                method : "POST",
+                headers : {"Content-Type" : "application/json"},
+                body : JSON.stringify(values),
+            });
 
-                const storedData = localStorage.getItem("userCred");
-                if(!storedData) return false;
+            const data = await res.json();
 
-                try{
-                    const users = JSON.parse(storedData);
-                    if(!Array.isArray(users)) throw new Error("Data is not an array"); 
+            if(res.ok && data.success) {
 
-                    const matchedUser = users.find(
-                    (user : any) => user.name.trim().toLowerCase() === values.name.trim().toLowerCase() && user.password === values.password
-                    );
-                return !!matchedUser;
-            }
-            catch{
+                return true;
+
+            }else{
+                setError(data.message || "Invalid login");
                 return false;
             }
-      };
+        }
+        catch(error){
+            setError("Server error");
+            return false;
+        }
+    };
 
 
       const validationSchema = Yup.object({
@@ -58,7 +62,7 @@ export default function Page() {
         name : Yup.string().min(2,"Name must be atleast 2 characters.").required("*Userame is required"),
         password : Yup.string().min(6,"Password must be at least 6 characters").required("Password is required"),
 
-      });
+    });
 
 
       const formik = useFormik({
@@ -68,9 +72,9 @@ export default function Page() {
             password : "",
         },
         validationSchema,
-        onSubmit : (values, {resetForm}) => {
+        onSubmit : async (values, {resetForm}) => {
 
-           const isLoggedIn = handleLogin(values);
+           const isLoggedIn = await handleLogin(values);
 
            if(isLoggedIn){
             setSuccess("Login Successfull");  
@@ -79,10 +83,9 @@ export default function Page() {
 
             setTimeout(() => {
                 router.push("/uform2");
-            }, 2000);
+            }, 1500);
           }else{
             setSuccess("");
-            setError("Invalid username or password");
           }
         }
       });
@@ -138,8 +141,8 @@ export default function Page() {
                 onChange={formik.handleChange} onBlur={formik.handleBlur}
                 error={formik.touched.password && Boolean(formik.errors.password)}
                 helperText={formik.touched.password && formik.errors.password}
-                inputProps={{
-                        endadornment : (
+                InputProps={{
+                        endAdornment : (
                             <InputAdornment position="end">
 
                                 <IconButton onClick={togglePassword} edge="end" size="small">
@@ -169,3 +172,27 @@ export default function Page() {
     
   );
 }
+
+
+
+      // FOR LOGIN FUNCTIONLITY : 📌
+    //   const handleLogin = (values : {name : string; password : string}) => {
+
+    //         if(typeof window === "undefined") return false;
+
+    //             const storedData = localStorage.getItem("userCred");
+    //             if(!storedData) return false;
+
+    //             try{
+    //                 const users = JSON.parse(storedData);
+    //                 if(!Array.isArray(users)) throw new Error("Data is not an array"); 
+
+    //                 const matchedUser = users.find(
+    //                 (user : any) => user.name.trim().toLowerCase() === values.name.trim().toLowerCase() && user.password === values.password
+    //                 );
+    //             return !!matchedUser;
+    //         }
+    //         catch{
+    //             return false;
+    //         }
+    //   };
