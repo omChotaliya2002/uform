@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Formik, Form, ErrorMessage, Field, yupToFormErrors } from 'formik';
+import { Formik, Form, ErrorMessage, Field} from 'formik';
 import * as Yup from 'yup';
 
 type tableDataType = {

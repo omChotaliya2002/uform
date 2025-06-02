@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
 
 import { IconButton, TextField } from "@mui/material";
 import {Button} from "@mui/material";
-import React, { useState } from "react";
-import  {AccountCircleRounded, WindowOutlined} from "@mui/icons-material";
+import React, { useState, useEffect } from "react";
+import  {AccountCircleRounded, SettingsPhoneTwoTone, WindowOutlined} from "@mui/icons-material";
 import InputAdornment from "@mui/material/InputAdornment";
 import { Visibility } from "@mui/icons-material";
 import { VisibilityOff } from "@mui/icons-material";
@@ -13,128 +13,149 @@ import Link from "next/link";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import Stack from "@mui/material/Stack";
+import { useFormik } from "formik";
+import * as Yup from 'yup';
 
 
 export default function Page() {
 
 
-      const [userName, setUserName] = useState("");
-      const [password, setPassword] = useState("");
-      const [error, setError] = useState("");
       const [success, setSuccess] = useState("");
-  
-      const router = useRouter();
-  
-      // SHOW / HIDE PASSWORD : 📌
-  
       const [showPassword, setShowPassword] = useState(false);
-  
-      const handleClickedShowPassword = () => setShowPassword((show)=> !show);
-  
-      const handleMoouseDownPassword = (event : React.MouseEvent<HTMLButtonElement>) => {
-              event.preventDefault();
-      }
-  
-      const handleMoouseUpPassword = (event : React.MouseEvent<HTMLButtonElement>) => {
-              event.preventDefault();
-      }
-      
-  
-      // FORM RELATED FUNCTIONALITY : 📌
+      const [error, setError] = useState("");
 
-      const handleLogin = () => {
+      const router = useRouter();
 
-            if(typeof window !== "undefined") {
+      // SHOW / HIDE PASSWORD : 📌
+      const togglePassword = () => setShowPassword((prev)=> !prev);
 
-                const storedData = localStorage.getItem("userData");
 
-                if(!storedData){
-                    setError("No registered user found");
-                    return;
-                }
-                
-                const parsedData = JSON.parse(storedData);
+      // FOR LOGIN FUNCTIONLITY : 📌
+      const handleLogin = (values : {name : string; password : string}) => {
 
-                if(parsedData.Name === userName && parsedData.Password === password) {
+            if(typeof window === "undefined") return false;
 
-                        setSuccess("Login Successfull");
-                        setError("");
-                }
-                else {
-                    setError("Invalid Credentials");
-                    setSuccess("");
-                }
+                const storedData = localStorage.getItem("userCred");
+                if(!storedData) return false;
+
+                try{
+                    const users = JSON.parse(storedData);
+                    if(!Array.isArray(users)) throw new Error("Data is not an array"); 
+
+                    const matchedUser = users.find(
+                    (user : any) => user.name.trim().toLowerCase() === values.name.trim().toLowerCase() && user.password === values.password
+                    );
+                return !!matchedUser;
+            }
+            catch{
+                return false;
             }
       };
 
 
+      const validationSchema = Yup.object({
+
+        name : Yup.string().min(2,"Name must be atleast 2 characters.").required("*Userame is required"),
+        password : Yup.string().min(6,"Password must be at least 6 characters").required("Password is required"),
+
+      });
+
+
+      const formik = useFormik({
+
+        initialValues : {
+            name : "",
+            password : "",
+        },
+        validationSchema,
+        onSubmit : (values, {resetForm}) => {
+
+           const isLoggedIn = handleLogin(values);
+
+           if(isLoggedIn){
+            setSuccess("Login Successfull");  
+            setError(""); 
+            resetForm();
+
+            setTimeout(() => {
+                router.push("/uform2");
+            }, 2000);
+          }else{
+            setSuccess("");
+            setError("Invalid username or password");
+          }
+        }
+      });
+      
 
   return (
-<>
-     
+<> 
+
+{success && (
+
+            <Stack spacing={2} sx={{width : "100%"}}>
+                <Alert severity="success">
+                    <AlertTitle> Success </AlertTitle>
+                        {success}
+                </Alert>
+            </Stack>
+        )} 
+
+        {error && (
+
+            <Stack spacing={2} sx={{width : "100%"}}>
+                <Alert severity="error">
+                    <AlertTitle> Error </AlertTitle>
+                        {error}
+                </Alert>
+            </Stack>
+        )} 
+
+
      <div className="flex items-center justify-center mt-[40px] mb-[40px]">
             <h1 className="text-4xl font-mono underline underline-offset-[8px]" style={{fontWeight : "bold"}}> Login </h1>
         </div>
 
-    <div className="flex flex-col w-[400px] h-[350px] mx-auto items-center justify-center mt-[30px] mb-[100px] gap-y-6" style={{border:"1px solid black"}}>
+<form onSubmit={formik.handleSubmit}>
+
+    <div className="p-5 flex flex-col w-[400px] h-[350px] mx-auto items-center justify-center mt-[30px] mb-[100px] gap-y-6" style={{border:"1px solid black"}}>
 
 
-            <TextField id="username" variant="outlined" value={userName} label="Username" type="name" onChange={(e)=> setUserName(e.target.value)}
-                slotProps={{
-                    input : {
-                        startAdornment : (
+            <TextField name="name" id="username" variant="outlined" fullWidth label="Username" type="name" value={formik.values.name}
+                onChange={formik.handleChange} onBlur={formik.handleBlur}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText = {formik.touched.name && formik.errors.name}
+                inputProps={{
+                        startadornment : (
                             <InputAdornment position="start">
-                                    {/* <AccountCircleOutlined/> */}
                                     <AccountCircleRounded/>
                             </InputAdornment>
                         ),
-                    }
                 }}/>
-            {/* {unameError && <p className="text-red-500 font-semibold text-sm mt-[-20px]"> {unameError} </p>} */}
 
 
-            <TextField id="password" variant="outlined" value={password} label="Password" type={showPassword ? "text" : "password"} onChange={(e)=> setPassword(e.target.value)}
-                slotProps={{
-                    input : {
-                        endAdornment : (
+            <TextField name="password" id="password" variant="outlined" fullWidth label="Password" type={showPassword ? "text" : "password"} value={formik.values.password}
+                onChange={formik.handleChange} onBlur={formik.handleBlur}
+                error={formik.touched.password && Boolean(formik.errors.password)}
+                helperText={formik.touched.password && formik.errors.password}
+                inputProps={{
+                        endadornment : (
                             <InputAdornment position="end">
 
-                                <IconButton aria-label={showPassword ? "hide password" : "show password"} onClick={handleClickedShowPassword}
-                                    onMouseDown={handleMoouseDownPassword} onMouseUp={handleMoouseUpPassword} edge="end" size="small">
+                                <IconButton onClick={togglePassword} edge="end" size="small">
 
                                     {showPassword ? <VisibilityOff/> : <Visibility/>}
 
                                 </IconButton>
                             </InputAdornment>
                         )
-                      }
                    }}/>
 
 
             {/* {passError && <p className="text-red-500 font-semibold text-sm mt-[-20px]"> {passError} </p>} */}
             
-                <Button style={{marginTop : "20px"}} variant="contained" onClick={handleLogin}> Login </Button>
+                <Button type="submit" fullWidth style={{marginTop : "20px"}} variant="contained"> Login </Button>
 
-                {error && (
-                
-                <Stack spacing={2} sx={{width : "100%"}}>
-                    <Alert severity="error">
-                        <AlertTitle> Error </AlertTitle>
-                        {error}
-                    </Alert>
-                </Stack>
-                )}
-
-                {success && (
-
-                <Stack spacing={2} sx={{width : "100%"}}>
-                    <Alert severity="success">
-                        <AlertTitle> Success </AlertTitle>
-                        {success}
-                    </Alert>
-                </Stack>
-
-                )}
 
             <div className="flex items-center justify-between gap-2">
                 
@@ -142,6 +163,7 @@ export default function Page() {
             </div>
     </div>
 
+</form>
 
 </>
     
