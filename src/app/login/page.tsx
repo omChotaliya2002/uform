@@ -43,6 +43,8 @@ export default function Page() {
 
             if(res.ok && data.success) {
 
+                sessionStorage.setItem("token", data.token);
+                router.push("/uform2");
                 return true;
 
             }else{
@@ -60,7 +62,7 @@ export default function Page() {
       const validationSchema = Yup.object({
 
         name : Yup.string().min(2,"Name must be atleast 2 characters.").required("*Userame is required"),
-        password : Yup.string().min(6,"Password must be at least 6 characters").required("Password is required"),
+        password : Yup.string().min(6,"Password must be at least 6 characters").required("*Password is required"),
 
     });
 

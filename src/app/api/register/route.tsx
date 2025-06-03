@@ -1,3 +1,27 @@
+// import { kv } from "@vercel/kv";
+
+// export async function POST(req : Request) {
+
+//     const body = await req.json();
+
+//     const userKey = `user:${body.email}`;
+//     const existing = await kv.get(userKey);
+
+//     if(existing){
+        
+//         return new Response(JSON.stringify({success : false, message : "User already exists"}), {status : 400});
+
+//     }
+
+//     await kv.set(userKey, JSON.stringify(body));
+
+//     return new Response(JSON.stringify({success : true}), {status : 201});
+// }
+
+
+
+// CODE WITH JSON FILE : 📌📌
+
 import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
@@ -35,3 +59,37 @@ export async function POST(req : Request) {
         return NextResponse.json({success : false, meessage : "Server error"}, {status : 500});
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

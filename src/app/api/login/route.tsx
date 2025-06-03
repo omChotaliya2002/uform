@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import fs from 'fs/promises';
 import path from "path";
+import jwt from "jsonwebtoken"; 
+
+const SECRET = process.env.JWT_SECRET || "mySuperSecret";
 
 
 export async function POST(req : Request) {
@@ -20,7 +23,12 @@ export async function POST(req : Request) {
         );
 
         if(matchedUser){
-            return NextResponse.json({success : true, message : 'Login successfull'});
+            // CREATING JWT : 📌📌📌
+
+            const token = jwt.sign({name : matchedUser.name}, SECRET, {expiresIn : "20s"});
+
+            return NextResponse.json({success : true, token, message : "Login successfully"});
+            
         }
         else{
             return NextResponse.json({success : false, message : "Invalid Credentials"}, {status : 401});

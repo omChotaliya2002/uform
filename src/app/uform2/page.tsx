@@ -4,13 +4,14 @@
   import { useEffect, useState } from "react";
   import Image from "next/image";
   import { useRouter } from "next/navigation";
+  import jwt from "jsonwebtoken";
+  import { jwtDecode } from "jwt-decode";
 
-
+  const SECRET = "mySuperSecret";                //  JWT TOKEN 📌📌📌
 
 type tableDataType = {
   [key : string] : string;
 }
-
 
 
 export default function Page() {
@@ -29,6 +30,9 @@ export default function Page() {
    const [showDelModal, setShowDelModal] = useState(false);
    const [showEditModal, setShowEditModal] = useState(false);
 
+   const [loading, setLoading] = useState(true);    //  loading for jwt token 📌
+   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   type formDataType = {[key : string] : string};        // type specification
   
   const [page, setPage] = useState(1);           // for pagination📌
@@ -43,23 +47,43 @@ export default function Page() {
 
 
   const router = useRouter();
+  
+  // HANDLING JWT TOKEN VERIFICATION  : ====================================== 💥
+  useEffect(() => {
+    
+      const token = sessionStorage.getItem("token");
 
+      if(!token){
+        router.push("/login");
+        return;
+      }
 
-  // Proper field error message : ======================📌
+          try{
 
-  const requiredFieldMsg :{[key : string] : string} = {
+            //validation token ✅ : 
 
-      name : "User name is required.",
-      email : "Email address is required.",
-      phone : "Phone no. is required.",
-      address : "Address is required.",
-      city : "City name is required.",
-      state : "State name is required.",
-      zip : "Zip code is required.",
-      country : "Country name is required.",
-      notes : "Notes is required."
+            const decoded : any = jwtDecode(token);
+            const exp = decoded.exp * 1000;
 
-  }
+            if(Date.now() >= exp){
+              sessionStorage.removeItem("token");
+              router.push("/login");
+            }
+            else{
+              setIsAuthenticated(true);
+            }
+
+          }
+          catch(error){
+            console.error("Invalid token", error);
+            sessionStorage.removeItem("token");
+            router.push("/login");
+          }
+          finally{
+            setLoading(false);
+          }
+
+  }, [router]);
 
     // COMBINING ALL SEARCH FILTERS =============================== : 📌📌 
 
@@ -82,8 +106,81 @@ export default function Page() {
 
         setFilterData(filtered);  
   }, [searchQuery, cityFilter, stateFilter, countryFilter, tableData]);
+
+
+  // initial table data : ========================👍
+
+  useEffect(() => {
+    
+      // const initialData : formDataType = {};
+      const initialData = {} as formDataType;
+      fields.forEach(field => {
+        initialData[field] = ""
+      });
+      setFormData(initialData);
+
+
+      let storedData : formDataType[] = [];
+      try{
+        storedData = JSON.parse(localStorage.getItem("userData") || "[]");
+        setTableData(storedData);
+      }
+      catch(err) {
+          console.error("❌❌ Error parsing userData from localstorage", err);
+          setTableData([]);
+      }
+
+      // setTableData(storedData);
+  }, []);
+
+
+  // lock the background when modal is open : =================👍
+
+  useEffect(() => {
+    
+      if(showModal){
+        document.body.style.overflow = "hidden";  //Lock scrolling 🔒
+      }
+      else{
+        document.body.style.overflow = "auto";  //Unlock scrolling 🔓
+      }
+
+    // cleanup if component unmounts : 
+    return () => {
+
+      document.body.style.overflow = "auto";
+      
+    }
+  }, [showModal]);
   
 
+//  Loading for authentication of JWT token ========== 👍
+  if(loading) { 
+
+        return (
+
+          <div className="flex items-center justify-center mt-[100px]">
+            <p className="font-semibold text-2xl"> Loading... </p>;
+          </div>
+        )
+   }
+
+
+   // Proper field error message : ======================📌
+
+  const requiredFieldMsg :{[key : string] : string} = {
+
+      name : "User name is required.",
+      email : "Email address is required.",
+      phone : "Phone no. is required.",
+      address : "Address is required.",
+      city : "City name is required.",
+      state : "State name is required.",
+      zip : "Zip code is required.",
+      country : "Country name is required.",
+      notes : "Notes is required."
+
+  }
 
 
   // custom validations : =========================================📌
@@ -146,32 +243,6 @@ export default function Page() {
         return "";
   };
 
-
-
-  // initial table data : ==============👍
-
-  useEffect(() => {
-    
-      // const initialData : formDataType = {};
-      const initialData = {} as formDataType;
-      fields.forEach(field => {
-        initialData[field] = ""
-      });
-      setFormData(initialData);
-
-
-      let storedData : formDataType[] = [];
-      try{
-        storedData = JSON.parse(localStorage.getItem("userData") || "[]");
-        setTableData(storedData);
-      }
-      catch(err) {
-          console.error("❌❌ Error parsing userData from localstorage", err);
-          setTableData([]);
-      }
-
-      // setTableData(storedData);
-  }, []);
 
 
   // console.log("alldata are :",allData);     //============================================
@@ -264,18 +335,7 @@ export default function Page() {
 
   const handleEdit = (realIndex : number) => {
 
-    // setShowEditModal(true);
-
         const selectedData = tableData[realIndex];
-
-
-        // console.log(selectedData);
-        // console.log("the index is : ", realIndex);
-
-
-        // setFormData(selectedData);
-        // setEditIndex(realIndex);
-
 
         router.push(`/edit/${selectedData.id}`);   //navigate to edit page
         console.log("the id is : ",selectedData.id);
@@ -292,26 +352,6 @@ export default function Page() {
         setTableData(updateData);
         localStorage.setItem("userData", JSON.stringify(updateData));
   };
-
-
-  // lock the background when modal is open : 👍
-
-  useEffect(() => {
-    
-      if(showModal){
-        document.body.style.overflow = "hidden";  //Lock scrolling 🔒
-      }
-      else{
-        document.body.style.overflow = "auto";  //Unlock scrolling 🔓
-      }
-
-    // cleanup if component unmounts : 
-    return () => {
-
-      document.body.style.overflow = "auto";
-      
-    }
-  }, [showModal]);
   
 
 
@@ -455,15 +495,6 @@ export default function Page() {
 
                 </div>
 
-
-                    {/* <div className="mt-[30px] w-[250px] h-[40px]" style={{border:"0px solid black"}}>
-                        <Link href={"/actions"}>
-                        <button className="w-full h-full bg-black text-white text-[20px] rounded-xl cursor-pointer font-semibold hover:bg-white hover:text-black hover:border-2 hover:border-black active:bg-gray-300" 
-                        style={{border:"1px solid black"}} > Edit User data </button>
-                        </Link>
-                    </div> */}
-
-
                   {  
                     showEditModal && (
                   <>
@@ -493,7 +524,6 @@ export default function Page() {
                 </>  
                   )
                 }
-
 
 
                 {
@@ -527,8 +557,6 @@ export default function Page() {
                   )
                 }
 
-
-              
 
               {
                 showModal && (

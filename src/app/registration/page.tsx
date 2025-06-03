@@ -62,12 +62,13 @@ const page = () => {
                     setTimeout(() => router.push('/login'), 1500);
                 }
                 else{
-                    setSuccess("");
                     setError(data.messsage || "Registration failed");
+                    setSuccess("");
                 }
             }
             catch{
                 setError("Server error");
+                setSuccess("");
             }
         },
 
