@@ -6,6 +6,8 @@
   import { useRouter } from "next/navigation";
   import jwt from "jsonwebtoken";
   import { jwtDecode } from "jwt-decode";
+  import Link from "next/link";
+  import { Logout } from "@mui/icons-material";
 
   const SECRET = "mySuperSecret";                //  JWT TOKEN 📌📌📌
 
@@ -358,6 +360,10 @@ export default function Page() {
   return (
     <>
           <div className="form flex flex-col items-center justify-center py-8 px-4" style={{border:"0px solid black"}}> 
+
+                <Link href = {"/login"}> 
+                    <h1 className="text-[16px] ml-[880px] text-blue-500 hover:scale-105 hover:underline hover:underline-offset-[5.8px]"> Logout <Logout sx={{height: "20px"}}/> </h1> 
+                </Link>
 
                 <div className="mt-[20px] w-full flex flex-row items-center justify-center max-w-fit mb-[30px]" style={{border:"0px solid black"}}>
 

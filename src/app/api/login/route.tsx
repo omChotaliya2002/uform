@@ -39,7 +39,7 @@ export async function POST(req: Request) {
         return NextResponse.json({success : false, message : "Server misconfiguration"}, {status : 500});
     }
 
-    const token = jwt.sign({ name: user.name}, SECRET, { expiresIn: "20s" });
+    const token = jwt.sign({ name: user.name}, SECRET, { expiresIn: "1m" });
 
     return NextResponse.json({ success: true, token}, { status: 200 });
 

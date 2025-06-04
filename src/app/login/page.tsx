@@ -46,7 +46,7 @@ export default function Page() {
 
                 sessionStorage.setItem("token", data.token);
 
-                // // Auto remove token when it expires : 👍
+                // Auto remove token when it expires : 👍
                 const decoded : {exp:number} = jwtDecode(data.token);
                 const expiryInMs = decoded.exp * 1000 - Date.now();
 
