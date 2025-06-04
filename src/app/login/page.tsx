@@ -15,6 +15,7 @@ import AlertTitle from "@mui/material/AlertTitle";
 import Stack from "@mui/material/Stack";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
+import { jwtDecode } from "jwt-decode";
 
 
 export default function Page() {
@@ -44,6 +45,19 @@ export default function Page() {
             if(res.ok && data.success) {
 
                 sessionStorage.setItem("token", data.token);
+
+                // // Auto remove token when it expires : 👍
+                const decoded : {exp:number} = jwtDecode(data.token);
+                const expiryInMs = decoded.exp * 1000 - Date.now();
+
+                setTimeout(() => {
+
+                    sessionStorage.removeItem("token");
+                    console.log("Token expired and removed from sessionStorage");
+                    window.location.href = "/login";
+                    
+                }, expiryInMs);
+
                 router.push("/uform2");
                 return true;
 
@@ -71,6 +85,7 @@ export default function Page() {
 
         initialValues : {
             name : "",
+            email : "",
             password : "",
         },
         validationSchema,

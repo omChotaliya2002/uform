@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField  from "@mui/material/TextField";
@@ -66,7 +67,7 @@ const page = () => {
                     setSuccess("");
                 }
             }
-            catch{
+            catch (err){
                 setError("Server error");
                 setSuccess("");
             }
@@ -106,7 +107,7 @@ return (
 <form onSubmit={formik.handleSubmit}>
 
     <div className="flex items-center justify-center mt-[40px]">
-        <h1 className="text-3xl font-semibold underline underline-offset-[7px]"> Regestration Form </h1>
+        <h1 className="text-3xl font-semibold underline underline-offset-[7px]"> Registration Form </h1>
     </div>
 
     
@@ -171,6 +172,11 @@ return (
 }
 
 export default page;
+
+
+
+
+
 
 
 //NOTES TO REMEMBER REGARDING THIS CODE :  📌📌📌
