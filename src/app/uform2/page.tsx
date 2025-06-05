@@ -7,9 +7,11 @@
   import jwt from "jsonwebtoken";
   import { jwtDecode } from "jwt-decode";
   import Link from "next/link";
+  import { Button } from "@mui/material";
   import { Logout } from "@mui/icons-material";
+import { transform } from "next/dist/build/swc/generated-native";
 
-  const SECRET = "mySuperSecret";                //  JWT TOKEN 📌📌📌
+  const SECRET = process.env.JWT_SECRET;                //  JWT TOKEN 📌📌📌
 
 type tableDataType = {
   [key : string] : string;
@@ -354,21 +356,31 @@ export default function Page() {
         setTableData(updateData);
         localStorage.setItem("userData", JSON.stringify(updateData));
   };
+
+  const handleLogout = () => {
+
+            sessionStorage.removeItem("token");
+            console.log("token removed from sessionstorage");
+            router.push("/login");
+      }
   
 
 
   return (
     <>
-          <div className="form flex flex-col items-center justify-center py-8 px-4" style={{border:"0px solid black"}}> 
+          <div className="form flex flex-col items-center justify-center py-8 px-4]" style={{border:"0px solid red"}}> 
 
-                <Link href = {"/login"}> 
-                    <h1 className="text-[16px] ml-[880px] text-blue-500 hover:scale-105 hover:underline hover:underline-offset-[5.8px]"> Logout <Logout sx={{height: "20px"}}/> </h1> 
-                </Link>
+                <div className="relative mt-[20px] w-full flex items-center justify-center mb-[30px]" style={{border:"0px solid black"}}>
 
-                <div className="mt-[20px] w-full flex flex-row items-center justify-center max-w-fit mb-[30px]" style={{border:"0px solid black"}}>
+                    <h1 className="w-1/2 flex justify-end text-center font-semibold underline underline-offset-4 text-2xl" style={{border : "0px solid black"}}> User Details  </h1>
 
-                  <h1 className="font-semibold underline underline-offset-4 text-2xl"> User Details  </h1>
-                  </div>
+                    <div className="w-1/3 flex justify-end px-4" style={{border : "0px solid black"}}>
+                          <Button onClick={handleLogout} variant="text" sx={{fontSize : 18 ,textTransform : "none"}}> 
+                              Logout <Logout sx={{height: "20px"}}/>
+                          </Button>
+                    </div>
+
+                </div>
 
 
                 {/* SEARCH BAR & DROPDOWN FILTERS : =============================== */}
