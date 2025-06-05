@@ -135,13 +135,13 @@ export default function Page() {
         )} 
 
 
-     <div className="flex items-center justify-center -mt-[80px]">
+     <div className="flex items-center justify-center -mt-[80px] select-none">
             <h1 className="text-[40px] font-mono text-white" style={{fontWeight : "bold"}}> Login </h1>
         </div>
 
   <form onSubmit={formik.handleSubmit}>
 
-    <div className="p-5 flex flex-col w-[400px] h-[350px] mx-auto items-center justify-center gap-y-6" style={{border:"0px solid black"}}>
+    <div className="p-5 flex flex-col w-[400px] h-[350px] mx-auto items-center justify-center gap-y-6 select-none" style={{border:"0px solid black"}}>
 
 
             <TextField name="name" id="username" variant="filled" fullWidth label="Username" type="name" value={formik.values.name} sx={{bgcolor : "#FFF5EE", borderRadius : "10px" , boxShadow : "0 0 0 3px #708090"}}
