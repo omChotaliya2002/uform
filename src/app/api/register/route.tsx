@@ -1,6 +1,7 @@
 import { kv } from "@vercel/kv";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { saveUserToKVAndFile } from "@/saveUsers";
 
 export async function POST(req: Request) {
   try {
@@ -17,8 +18,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: "User already exists" }, { status: 400 });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const userData = { name, email, password: hashedPassword, };
+    // const hashedPassword = await bcrypt.hash(password, 10);
+     const hashedPassword = await saveUserToKVAndFile(name, password);
+
+     console.log(hashedPassword);
+  
+    const userData = { name, email, password: hashedPassword,};
 
     await kv.set(userKey, JSON.stringify(userData));
 
