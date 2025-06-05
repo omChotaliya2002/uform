@@ -86,7 +86,7 @@ return (
 
     {success && (
 
-                <Stack spacing={2} sx={{width : "100%"}}>
+                <Stack spacing={2} sx={{width : "100%", position : "fixed", top : 0, left : 0, zIndex : 9999}}>
                     <Alert severity="success">
                         <AlertTitle> Success </AlertTitle>
                           {success}
@@ -97,7 +97,7 @@ return (
 
     {error && (
 
-                <Stack spacing={2} sx={{width : "100%"}}>
+                <Stack spacing={2} sx={{width : "100%", position : "fixed", top : 0, left : 0, zIndex : 9999}}>
                     <Alert severity="error">
                         <AlertTitle> Error </AlertTitle>
                           {error}
