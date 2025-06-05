@@ -11,6 +11,8 @@ import AlertTitle from "@mui/material/AlertTitle";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import styles from "./Registration.module.css";
+
 
 
 const page = () => {
@@ -80,6 +82,7 @@ const page = () => {
 
 return (
 <>
+<div className={styles.regContainer}>
 
     {success && (
 
@@ -106,27 +109,33 @@ return (
 
 <form onSubmit={formik.handleSubmit}>
 
-    <div className="flex items-center justify-center mt-[40px]">
-        <h1 className="text-3xl font-semibold underline underline-offset-[7px]"> Registration Form </h1>
+    <div className="flex items-center justify-center mt-[80px] mb-[10px]">
+        <h1 className="text-[40px] text-white font-mono"> <strong> Registration </strong> </h1>
     </div>
 
     
-    <div className="flex flex-col items-center justify-center h-[480px] w-[420px] mt-[40px] mb-[100px] select-none gap-y-5 mx-auto hover:rounded-xl" 
-        style={{border:"1px solid black"}}>
+    <div className="flex flex-col items-center justify-center h-[450px] w-[300px] mb-[100px] select-none gap-y-5 mx-auto hover:rounded-xl" 
+        style={{border:"0px solid white"}}>
     
-            <TextField name="name" label="Name" size="small" value={formik.values.name} onChange={formik.handleChange} onBlur={formik.handleBlur}
+            <TextField variant="filled"  name="name" label="Name" size="small" fullWidth sx={{bgcolor : "#FFF5EE", borderRadius : "10px", boxShadow : "0 0 0 3px #708090"}}
+                value={formik.values.name}
+                onChange={formik.handleChange} onBlur={formik.handleBlur}
                 error={formik.touched.name && Boolean(formik.errors.name)}
                 helperText = {formik.touched.name && formik.errors.name}
-            sx={{width : "60%"}}/>
+            />
 
 
-            <TextField name="email" label="Email" type="email" size="small" value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur}
+            <TextField variant="filled" name="email" label="Email" type="email" size="small" fullWidth sx={{bgcolor : "#FFF5EE", borderRadius : "10px", boxShadow : "0 0 0 3px #708090"}}
+                value={formik.values.email}
+                onChange={formik.handleChange} onBlur={formik.handleBlur}
                 error={formik.touched.email && Boolean(formik.errors.email)}
                 helperText = {formik.touched.email && formik.errors.email}
-                sx={{width : "60%"}}/>
+                />
 
 
-            <TextField name="password" label="password" type={showPassword ? "text" : "password"} size="small" value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur}
+            <TextField variant="filled" name="password" label="password" size="small" fullWidth sx={{bgcolor : "#FFF5EE", borderRadius : "10px", boxShadow : "0 0 0 3px #708090"}}
+                type={showPassword ? "text" : "password"} value={formik.values.password}
+                onChange={formik.handleChange} onBlur={formik.handleBlur}
                 error={formik.touched.password && Boolean(formik.errors.password)}
                 helperText = {formik.touched.password && formik.errors.password}
                 InputProps={{
@@ -141,10 +150,12 @@ return (
                             </InputAdornment>
                         ),
                 }}
-                sx={{width : "60%"}} />
+                />
 
 
-            <TextField name="confpassword" label="Confirm password" type={showConfPassword ? "text" : "password"} size="small" value={formik.values.confpassword} onChange={formik.handleChange} onBlur={formik.handleBlur}
+            <TextField variant="filled" name="confpassword" label="Confirm password" size="small" fullWidth sx={{bgcolor : "#FFF5EE", borderRadius : "10px", boxShadow : "0 0 0 3px #708090"}}
+                type={showConfPassword ? "text" : "password"}
+                value={formik.values.confpassword} onChange={formik.handleChange} onBlur={formik.handleBlur}
                 error={formik.touched.confpassword && Boolean(formik.errors.confpassword)} 
                 helperText = {formik.touched.confpassword && formik.errors.confpassword}
                 InputProps={{
@@ -155,17 +166,21 @@ return (
 
                                     {showConfPassword ? <VisibilityOff/> : <Visibility/>}
 
-                                </IconButton>
+                                </IconButton> 
                             </InputAdornment>
                         )
                 }}
-                sx={{width : "60%"}}/>
+                />
 
 
-            <Button variant="contained" color="primary" type="submit" size="medium" className="top-[20px]" sx={{width:"30%"}}> Submit </Button>
+            <Button fullWidth variant="contained" color="primary" type="submit" size="medium" className="top-[20px]" sx={{borderRadius : "10px"}}>
+                Submit 
+            </Button>
             
     </div>
-</form>
+  </form>
+
+</div>
 
     </>
 )

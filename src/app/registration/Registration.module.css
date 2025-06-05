@@ -1,0 +1,13 @@
+
+.regContainer {
+
+    min-height: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('/images/bg2.jpg');
+    background-size: inherit;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
