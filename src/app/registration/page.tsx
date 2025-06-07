@@ -1,6 +1,5 @@
 "use client";
 
-
 import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField  from "@mui/material/TextField";
@@ -114,7 +113,7 @@ return (
     </div>
 
     
-    <div className="flex flex-col items-center justify-center h-[450px] w-[300px] mb-[100px] select-none gap-y-5 mx-auto hover:rounded-xl select-none" 
+    <div className="flex flex-col items-center justify-center h-[450px] w-[300px] mb-[100px] gap-y-5 mx-auto hover:rounded-xl select-none" 
         style={{border:"0px solid white"}}>
     
             <TextField variant="filled"  name="name" label="Name" size="small" fullWidth sx={{bgcolor : "#FFF5EE", borderRadius : "10px", boxShadow : "0 0 0 3px #708090"}}
