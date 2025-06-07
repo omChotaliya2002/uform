@@ -19,7 +19,8 @@ export async function saveUserToKVAndFile(username : string, password : string) 
 
         try{
              fs.appendFileSync(filePath, passwordEntry, "utf-8");
-             console.log("✅✅✅user saved to kv");
+             console.log("✅✅✅user saved to local file");
+             console.log("saved password is : ",passwordEntry);
 
         } catch(error){
             console.error("❌ failed to save password locally.", error);
