@@ -1,29 +1,32 @@
 
+// => save plain password to local file : 💥💥💥💥
+
+
 import fs from "fs";
 import bcrypt from "bcryptjs";
-import { kv } from "@vercel/kv";
 
+
+const filePath = "src/passwords.tsx";
 
 export async function saveUserToKVAndFile(username : string, password : string) {
 
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    //1. save the hashed password to KV : ✅
+    if(process.env.NODE_ENV === "development") {
+        
+        const passwordEntry = `\n// [${new Date().toLocaleString()}]\nexport const ${username}_pass = "${password}";\n`;
 
-    await kv.set(`user:${username.toLowerCase()}`,{name :username, hashedPassword});
+        try{
+             fs.appendFileSync(filePath, passwordEntry, "utf-8");
+             console.log("✅✅✅user saved to kv");
 
+        } catch(error){
+            console.error("❌ failed to save password locally.", error);
+        }
 
-    // 2. save plain password to local file : ✅
+    }
 
-    const filePath = "src/passwords.tsx";
-
-    const passwordEntry = `\n// [${new Date().toLocaleString()}]\nexport const ${username}_pass = "${password}";\n`;
-
-    fs.appendFileSync(filePath, passwordEntry, "utf-8");
-
-
-    console.log("✅✅✅user saved to kv");
 
     return hashedPassword;
 
