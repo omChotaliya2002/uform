@@ -1,13 +1,13 @@
 
 // => save plain password to local file : 💥💥💥💥
 
-
 import fs from "fs";
 import bcrypt from "bcryptjs";
 import path from "path";
+import { kv } from "@vercel/kv";
 
 
-const filePath = path.join(process.cwd(), "src", "passwords.tsx");
+const filePath = path.join(process.cwd(), "src", "utils" ,"passwords.tsx");
 
 export async function saveUserToKVAndFile(username : string, password : string) {
 
@@ -27,8 +27,6 @@ export async function saveUserToKVAndFile(username : string, password : string) 
         }
 
     }
-
-
-    return hashedPassword;
-
+    
+    return hashedPassword;               // if we return then it will write down into vercel kv storage✅
 } 

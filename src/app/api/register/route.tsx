@@ -1,33 +1,34 @@
 import { kv } from "@vercel/kv";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
-import { saveUserToKVAndFile } from "@/saveUsers";
+import { saveUserToKVAndFile } from "@/utils/saveUsers";
 
 export async function POST(req: Request) {
+
   try {
+
     const { name, email ,password } = await req.json();
 
-    if (!name || !email || !password) {
-      return NextResponse.json({ success: false, message: "Missing fields" }, { status: 400 });
-    }
+      if (!name || !email || !password) {
+        return NextResponse.json({ success: false, message: "Missing fields" }, { status: 400 });
+      }
 
     const userKey = `user:${name.toLowerCase()}`;
+    console.log("the user key is : ", userKey);
     const existingUser = await kv.get(userKey);
 
-    if (existingUser) {
-      return NextResponse.json({ success: false, message: "User already exists" }, { status: 400 });
-    }
+      if (existingUser) {
+        return NextResponse.json({ success: false, message: "User already exists" }, { status: 400 });
+      }
 
-    // const hashedPassword = await bcrypt.hash(password, 10);
      const hashedPassword = await saveUserToKVAndFile(name, password);
-
-     console.log(hashedPassword);
   
     const userData = { name, email, password: hashedPassword,};
-
+    
     await kv.set(userKey, JSON.stringify(userData));
 
     return NextResponse.json({ success: true }, { status: 200 });
+    
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
